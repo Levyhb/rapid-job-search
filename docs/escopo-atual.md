@@ -2,8 +2,10 @@
 
 Os pedidos mais recentes do usuário prevalecem sobre os pontos conflitantes do plano original.
 
+Nome da aplicação: **RapidJobSearch**. Roteiro de implementação atualizado em `docs/plano-desenvolvimento.md`.
+
 - Cadastro de empresas por nome e URL.
-- Empresas salvas em formato JSON, com importação/exportação compartilhável junto do cadastro; definir a persistência física ao implementar o cadastro, preservando esse contrato.
+- Empresas salvas em arquivo JSON local (caminho configurável), com importação/exportação compartilhável junto do cadastro. PostgreSQL permanece para configurações, execuções e vagas; o catálogo JSON será a fonte do cadastro.
 - Palavras-chave alternativas no título da vaga, como fullstack, backend ou frontend.
 - Somente vagas remotas; a interpretação inicial é exigir confirmação dessa modalidade.
 - Percorrer páginas/lotes dos portais e apresentar resultados paginados na aplicação.
@@ -22,4 +24,4 @@ Formato de intercâmbio proposto:
 }
 ```
 
-Esta entrega prepara frontend, backend, infraestrutura e ferramentas. As funcionalidades de domínio serão implementadas posteriormente.
+Frontend, backend, infraestrutura e ferramentas estão preparados. O layout base do RapidJobSearch e seu CSS global foram implementados; as funcionalidades de domínio seguem as próximas etapas do roteiro.

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Busca Vagas",
+  title: "RapidJobSearch — vagas remotas",
   description: "Painel pessoal para encontrar vagas remotas nas empresas que você acompanha.",
 };
 

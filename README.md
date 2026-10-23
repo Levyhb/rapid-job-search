@@ -1,10 +1,12 @@
-# Busca Vagas
+# RapidJobSearch
 
 Painel pessoal para buscar vagas remotas nos portais das empresas cadastradas.
 
 ## Estado atual
 
-Ambiente de desenvolvimento implementado. A tela inicial verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas, importação/exportação JSON, filtros e coleta de vagas serão implementados nas próximas etapas. Nenhum resultado demonstrativo é apresentado como uma busca real.
+Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas, importação/exportação JSON, filtros e coleta de vagas serão implementados nas próximas etapas. Os controles pendentes estão desabilitados e a prévia está identificada.
+
+O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0 e 1 concluídas; próxima entrega funcional: cadastro de empresas com persistência JSON.
 
 ## Stack
 
@@ -104,5 +106,6 @@ O worker é a base de execução; tarefas reais de busca ainda não foram implem
 - `scripts`: setup, execução e verificações.
 - `docs/gitflow.md`: convenções de branches.
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
+- `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas. O setup está em `feature/setup-ambiente`. O remoto GitHub será configurado posteriormente.
+Branches `main` e `develop` preparadas. O setup foi integrado em `develop`; o plano e o layout base estão em `feature/plano-layout`. O remoto GitHub será configurado posteriormente.
