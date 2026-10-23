@@ -6,7 +6,7 @@ Nome da aplicação: **RapidJobSearch**. Roteiro de implementação atualizado e
 
 - Cadastro de empresas por nome e URL.
 - Empresas salvas em arquivo JSON local (caminho configurável), com importação/exportação compartilhável junto do cadastro. PostgreSQL permanece para configurações, execuções e vagas; o catálogo JSON será a fonte do cadastro.
-- Palavras-chave alternativas no título da vaga, como fullstack, backend ou frontend.
+- Cargos como opções alternativas no título da vaga, como fullstack, backend ou frontend.
 - Somente vagas remotas; a interpretação inicial é exigir confirmação dessa modalidade.
 - Percorrer páginas/lotes dos portais e apresentar resultados paginados na aplicação.
 - Botão de pesquisa com loading, contagem progressiva de vagas compatíveis únicas e lista final com links.

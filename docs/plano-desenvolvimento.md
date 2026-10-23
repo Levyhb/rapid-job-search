@@ -4,13 +4,14 @@ Atualizado em 23/10/2026. Este é o roteiro de implementação do escopo atual. 
 
 ## Objetivo da primeira versão
 
-Cadastrar empresas (nome e URL), configurar palavras-chave e iniciar manualmente uma busca por vagas remotas. Consultar as páginas dos portais suportados, contar progressivamente os resultados compatíveis únicos e apresentar o total final e uma tabela paginada com links diretos.
+Cadastrar empresas (nome e URL), configurar cargos e iniciar manualmente uma busca por vagas remotas. Consultar as páginas dos portais suportados, contar progressivamente os resultados compatíveis únicos e apresentar o total final e uma tabela paginada com links diretos.
 
 ## Decisões de produto
 
 - Nome: **RapidJobSearch**. Interface em português do Brasil.
+- Duas abas principais: **Busca por vagas** (resumo, botão, progresso e resultados) e **Empresas e cargos** (cadastro/importação de empresas e seleção de cargos). A busca é a aba inicial; o processamento não é interrompido ao trocar de aba.
 - Empresas persistidas em documento JSON local, com importação/exportação no mesmo formato junto do cadastro. PostgreSQL será usado para configurações de busca, execuções e vagas; não haverá dois cadastros de empresas independentes.
-- Palavras-chave são alternativas: basta um termo no título. Suportar variações explícitas, incluindo fullstack/full stack/full-stack, backend/back-end e frontend/front-end.
+- Cargos são opções alternativas: basta um termo no título. Suportar variações explícitas, incluindo fullstack/full stack/full-stack, backend/back-end e frontend/front-end.
 - Somente vagas com evidência de modalidade remota. Consultar detalhes quando a listagem for inconclusiva; não inferir remoto pela empresa. Preservar restrições territoriais.
 - Paginação tanto na coleta dos portais quanto na tabela da aplicação.
 - Contagem durante a busca = vagas compatíveis únicas já persistidas naquela execução. Falhas e duplicatas não entram no contador.
@@ -36,7 +37,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 | 1 | Identidade, layout base e CSS global | 0 | Concluída |
 | 2 | Cadastro de empresas com persistência JSON | 1 | Pendente |
 | 3 | Importação/exportação de empresas | 2 | Pendente |
-| 4 | Palavras-chave e regras de vagas remotas | 1, 0 | Pendente |
+| 4 | Cargos e regras de vagas remotas | 1, 0 | Pendente |
 | 5 | Validar fontes e coletar um portal inteiro | 2, 4 | Pendente; requer amostra real de URLs |
 | 6 | Pesquisa em segundo plano e progresso | 5 | Pendente |
 | 7 | Resultados paginados e total final | 6 | Pendente |
@@ -53,7 +54,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 **Branch:** `feature/plano-layout`.
 
-**Frontend:** aplicar RapidJobSearch na identidade e nos metadados. Criar painel com navegação para Empresas, Palavras-chave e Resultados; reservar pesquisa e tabela. Identificar a prévia e manter ações ainda não implementadas desabilitadas.
+**Frontend:** aplicar RapidJobSearch na identidade e nos metadados. Organizar painel em Busca por vagas e Empresas e cargos; reservar resumo, pesquisa e tabela na aba inicial. Identificar a prévia e manter ações ainda não implementadas desabilitadas.
 
 **CSS global:** centralizar cores, tipografia, espaçamento, bordas, sombras, botões, campos, cards, tabela, estados de foco, responsividade e redução de movimento em `frontend/src/app/globals.css`. Reutilizar classes/componentes nas etapas seguintes.
 
@@ -94,15 +95,15 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 **Aceite:** exportar → importar em catálogo vazio → obter a mesma lista. Arquivo inválido não altera o cadastro; duplicatas não se multiplicam; cancelamento preserva os dados.
 
-## Etapa 4 — palavras-chave e filtro remoto
+## Etapa 4 — cargos e filtro remoto
 
-**Branch:** `feature/palavras-chave-filtros`.
+**Branch:** `feature/cargos-filtros`.
 
-**Backend:** persistir palavras-chave no PostgreSQL com migração. Implementar regra de alternativas no título, normalização de caixa/acentos/separadores e limites de palavras. Variações aceitas precisam estar documentadas e visíveis. Não usar a descrição para satisfazer o cargo por padrão.
+**Backend:** persistir cargos no PostgreSQL com migração. Implementar regra de alternativas no título, normalização de caixa/acentos/separadores e limites de palavras. Variações aceitas precisam estar documentadas e visíveis. Não usar a descrição para satisfazer o cargo por padrão.
 
-**Frontend:** adicionar/remover palavras-chave em chips, apresentar variações e a regra “qualquer um dos termos no título”. Mostrar “Somente vagas remotas” como regra fixa da primeira versão.
+**Frontend:** adicionar/remover cargos em chips, apresentar variações e a regra “qualquer um dos termos no título”. Mostrar “Somente vagas remotas” como regra fixa da primeira versão.
 
-**Aceite:** Full-Stack Developer corresponde a fullstack com a variação cadastrada; Backend Developer corresponde a backend; Analista de Suporte com backend apenas na descrição não corresponde. Remota inclui; presencial/híbrida exclui; modalidade desconhecida exige detalhes e, sem confirmação, exclui. Palavras-chave sobrevivem ao reinício.
+**Aceite:** Full-Stack Developer corresponde a fullstack com a variação cadastrada; Backend Developer corresponde a backend; Analista de Suporte com backend apenas na descrição não corresponde. Remota inclui; presencial/híbrida exclui; modalidade desconhecida exige detalhes e, sem confirmação, exclui. Cargos sobrevivem ao reinício.
 
 ## Etapa 5 — validar fontes e entregar um coletor
 
@@ -159,10 +160,10 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 ## Direção de layout
 
 - Painel claro, fundo suave e cards brancos; cor principal índigo, verde para modalidade remota/conexão e texto de alto contraste.
-- Cabeçalho com marca e navegação para Empresas, Palavras-chave e Resultados.
+- Cabeçalho com marca e abas Busca por vagas e Empresas e cargos.
 - Abertura curta com objetivo da ferramenta e ação para começar a configurar.
-- Empresas e palavras-chave próximas para preparar a busca no mesmo painel.
-- Pesquisa abaixo da configuração, com loading/contador; resultados logo abaixo.
+- Empresas e cargos na aba de configuração, com atalho para voltar à busca.
+- Aba de busca com quantidades de empresas cadastradas/cargos selecionados, botão, loading/contador e resultados logo abaixo. Antes da primeira consulta, preservar o estado vazio de Vagas encontradas.
 - Tabela com foco no nome da empresa e título da vaga, sem informações técnicas no fluxo de pesquisa.
 - Controles com labels, foco visível, estados disabled/loading, teclado e suporte a telas pequenas.
 - Diagnóstico de desenvolvimento em área recolhível, separado do painel de oportunidades.
