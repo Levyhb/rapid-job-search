@@ -1,0 +1,47 @@
+name: busca-vagas
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: busca_vagas
+      POSTGRES_PASSWORD: local_dev
+      POSTGRES_DB: busca_vagas
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U busca_vagas -d busca_vagas"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  worker:
+    profiles: ["worker"]
+    build: ./backend
+    init: true
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://busca_vagas:local_dev@postgres:5432/busca_vagas
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ./backend/app:/app/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+volumes:
+  postgres_data:
+  redis_data:
