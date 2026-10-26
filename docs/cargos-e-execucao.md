@@ -21,7 +21,7 @@ A seção Testar título de vaga chama o backend e informa os cargos selecionado
 
 ## Estado do produto
 
-Frontend e backend de empresas e cargos estão integrados. O backend informa `search_available: false`, mantendo o botão Buscar vagas desabilitado até a implementação dos coletores e execuções. Ter empresas e cargos cadastrados ainda não significa que a coleta real esteja pronta.
+Frontend e backend de empresas e cargos estão integrados. Atualização da etapa de coleta: o backend já libera a busca para as fontes validadas. Empresas, cargos selecionados, Redis e worker ativo são necessários. Veja `docs/coleta-portais.md`.
 
 ## Iniciar no Windows
 

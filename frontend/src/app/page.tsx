@@ -47,7 +47,7 @@ export default function Home() {
       </header>
 
       <main id="conteudo" className="app-main">
-        <div className="preview-notice"><span className="status-dot" /><strong>Prévia do painel</strong><span>Empresas e cargos salvos no servidor. A coleta de vagas será conectada nas próximas etapas.</span></div>
+        <div className="preview-notice"><span className="status-dot" /><strong>Busca de vagas remotas</strong><span>Consulte as empresas cadastradas usando seus cargos e variações.</span></div>
         <section id="search-panel" role="tabpanel" aria-labelledby="search-tab" hidden={tab !== "search"} tabIndex={0}>
           <section className="hero" aria-labelledby="hero-title">
             <div className="hero-copy">

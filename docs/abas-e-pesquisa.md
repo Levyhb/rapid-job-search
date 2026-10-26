@@ -27,3 +27,5 @@ Enquanto o resumo real não estiver disponível, os totais exibem “—” e o 
 ## Validação
 
 Verificações realizadas: lint, TypeScript e build; navegação por abas e teclado; estado vazio com a API atual; ausência de overflow em 320, 390 e 768 px. Respostas controladas apenas no teste de navegador validaram resumo 3 empresas/2 cargos, loading, atualização de 7 para 21 vagas, troca de abas durante a execução, conclusão e paginação em duas páginas. Essas respostas não fazem parte do produto nem representam integração real com portais.
+
+Atualização de 26/10/2026: os endpoints de pesquisa e resultados estão implementados com RQ/PostgreSQL e os três coletores validados. `search_available` é verdadeiro; a tarefa exige worker ativo. `latest_search_id` permite recuperar a última execução. A tabela inclui modalidade. O histórico de contrato acima descreve a preparação inicial; o estado atual está em `docs/coleta-portais.md`.

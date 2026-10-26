@@ -3,16 +3,18 @@ export type ConfigurationSummary = {
   selected_role_count: number;
   active_search_id: string | null;
   search_available?: boolean;
+  latest_search_id?: string | null;
 };
 
 export type SearchStatus = {
   id: string;
   status: "queued" | "running" | "completed" | "interrupted" | "cancelled";
   found_count: number;
+  diagnostics?: { id: string; company: string; message: string; status: string }[];
 };
 
 export type JobsPage = {
-  items: { id: string; company: string; title: string; url: string }[];
+  items: { id: string; company: string; title: string; url: string; modality: "remote" | "hybrid" | "onsite" | "unknown"; location?: string }[];
   total: number;
   page: number;
   page_size: number;

@@ -4,9 +4,9 @@ Painel pessoal para buscar vagas remotas nos portais das empresas cadastradas.
 
 ## Estado atual
 
-Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos, seleção, variações e prévia de títulos também funcionam, com persistência no PostgreSQL. A coleta de vagas continua pendente; o botão de busca permanece desabilitado.
+Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos, seleção, variações e prévia de títulos também funcionam, com persistência no PostgreSQL. A coleta real de Alice, Afya e Arco está integrada ao botão de busca, com processamento em segundo plano, contagem e resultados remotos persistidos.
 
-O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–4 concluídas; próxima entrega funcional: validar fontes e implementar o primeiro coletor. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
+O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–7 concluídas; próxima entrega: ampliar cobertura e consolidar a primeira release. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
 
 ## Stack
 
@@ -94,7 +94,7 @@ Ao adicionar modelos, importe-os em `app/models/__init__.py` e importe esse mód
 docker compose --profile worker stop
 ```
 
-O worker é a base de execução; tarefas reais de busca ainda não foram implementadas. Alterações no código montado do worker exigem reiniciá-lo. A execução nativa alternativa `python -m app.workers.main` usa SimpleWorker no Windows, com limitações de isolamento; prefira o contêiner Linux para as coletas.
+O worker executa as tarefas reais de busca e deve permanecer ativo enquanto houver pesquisas. Alterações no código montado do worker exigem reiniciá-lo. A execução nativa alternativa `python -m app.workers.main` usa SimpleWorker no Windows, com limitações de isolamento; prefira o contêiner Linux para as coletas.
 
 ## Organização e Gitflow
 
@@ -108,6 +108,8 @@ O worker é a base de execução; tarefas reais de busca ainda não foram implem
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
 - `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas foi integrado em `develop`; os cargos estão em `feature/cargos-filtros`. O remoto GitHub será configurado posteriormente.
+Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas foi integrado em `develop`; a coleta está em `feature/primeiro-coletor`. O remoto GitHub será configurado posteriormente.
 
 Detalhes dos cargos, regras e comandos manuais: [docs/cargos-e-execucao.md](docs/cargos-e-execucao.md).
+
+Coleta real, fontes suportadas e execução com worker: [docs/coleta-portais.md](docs/coleta-portais.md).

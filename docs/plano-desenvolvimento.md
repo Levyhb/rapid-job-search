@@ -39,9 +39,9 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 | 2 | Cadastro de empresas com persistência JSON | 1 | Concluída |
 | 3 | Importação/exportação de empresas | 2 | Concluída |
 | 4 | Cargos e regras de vagas remotas | 1, 0 | Concluída |
-| 5 | Validar fontes e coletar um portal inteiro | 2, 4 | Pendente; requer amostra real de URLs |
-| 6 | Pesquisa em segundo plano e progresso | 5 | Pendente |
-| 7 | Resultados paginados e total final | 6 | Pendente |
+| 5 | Validar fontes e coletar um portal inteiro | 2, 4 | Concluída: Alice, Afya e Arco |
+| 6 | Pesquisa em segundo plano e progresso | 5 | Concluída |
+| 7 | Resultados paginados e total final | 6 | Concluída |
 | 8 | Expandir fontes e consolidar falhas | 7 | Pendente |
 | 9 | Validação integrada e primeira release | 8 | Pendente |
 
@@ -110,7 +110,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 **Branch:** `feature/primeiro-coletor`.
 
-**Entrada necessária:** amostra de empresas e URLs reais para selecionar o primeiro portal. Até receber essa lista, é possível avançar nos contratos e cenários controlados; não classificar um portal como validado sem consultá-lo.
+**Entrada recebida:** Alice, Afya e Arco. As fontes foram verificadas e os coletores entregues; ver `docs/coleta-portais.md`. Para novas integrações, será necessária outra amostra real. Novos portais só serão classificados como validados após consulta real e conferência de cobertura.
 
 **Backend:** criar contrato comum de vaga e de cobertura. Preferir dados públicos estruturados confiáveis; usar Playwright quando necessário. Percorrer todas as páginas/lotes, buscar detalhes dos candidatos, extrair modalidade e URL direta, limitar tentativas/duração e detectar loops. Aplicar regras da etapa 4.
 
@@ -173,4 +173,4 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 
 ## Próxima etapa funcional
 
-**Etapa 5: validar uma amostra real de URLs e implementar o primeiro coletor completo.** Empresas, cargos, seleção, variações e regras já funcionam no servidor; coleta e execução continuam pendentes. Evidências em `docs/cargos-e-execucao.md`.
+**Etapa 8: ampliar a cobertura conforme novas empresas forem priorizadas.** As etapas 5–7 foram entregues com as fontes Alice/InHire, Afya/Gupy e Arco/Greenhouse, execução RQ e resultados paginados. Evidências e limites em `docs/coleta-portais.md`.

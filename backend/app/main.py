@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.api.companies import router as companies_router
 from app.api.health import router
 from app.api.roles import router as roles_router
+from app.api.searches import router as searches_router
 from app.core.config import get_settings
 from app.services.company_catalog import CatalogError
 
@@ -23,6 +24,7 @@ app.add_middleware(
 app.include_router(router)
 app.include_router(companies_router)
 app.include_router(roles_router)
+app.include_router(searches_router)
 
 
 @app.exception_handler(CatalogError)
@@ -37,8 +39,7 @@ async def database_error_handler(request, error: SQLAlchemyError):
         status_code=503,
         content={
             "detail": (
-                "Não foi possível acessar os cargos. "
-                "Inicie o PostgreSQL e execute as migrações."
+                "Banco indisponível. Inicie o PostgreSQL e execute as migrações."
             )
         },
     )

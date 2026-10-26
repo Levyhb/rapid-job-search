@@ -1,0 +1,8 @@
+{
+  "versao": 1,
+  "empresas": [
+    { "nome": "Alice", "url": "https://alice.inhire.app/vagas" },
+    { "nome": "Afya", "url": "https://afya.gupy.io/" },
+    { "nome": "Arco", "url": "https://www.arcoeducacao.com.br/carreiras#grnhse_app" }
+  ]
+}

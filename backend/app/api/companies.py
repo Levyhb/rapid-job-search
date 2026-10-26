@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.core.database import get_session
 from app.models.role import Role
+from app.models.search import SearchRun
 from app.schemas.company import Company, CompanyInput, ImportDocument
 from app.services.company_catalog import CompanyCatalog
 
@@ -62,6 +63,11 @@ def configuration_summary(
         "selected_role_count": session.scalar(
             select(func.count()).select_from(Role).where(Role.selecionado.is_(True))
         ),
-        "active_search_id": None,
-        "search_available": False,
+        "active_search_id": session.scalar(
+            select(SearchRun.id).where(SearchRun.active_key == "active").limit(1)
+        ),
+        "search_available": True,
+        "latest_search_id": session.scalar(
+            select(SearchRun.id).order_by(SearchRun.created_at.desc()).limit(1)
+        ),
     }

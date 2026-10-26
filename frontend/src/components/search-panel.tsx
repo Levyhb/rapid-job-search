@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Icon } from "@/components/icon";
 import { jobLink, requestApi, type ConfigurationSummary, type JobsPage, type SearchStatus } from "@/lib/search-api";
@@ -13,6 +13,16 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
   const [jobs, setJobs] = useState<JobsPage | null>(null);
   const [page, setPage] = useState(1);
   const [loadingJobs, setLoadingJobs] = useState(false);
+  const diagnosticsSeen = useRef(new Set<string>());
+
+  useEffect(() => {
+    for (const item of search?.diagnostics ?? []) {
+      if (!diagnosticsSeen.current.has(item.id)) {
+        console.log(`[RapidJobSearch] ${item.company} | ${item.status}: ${item.message}`);
+        diagnosticsSeen.current.add(item.id);
+      }
+    }
+  }, [search]);
 
   const running = search?.status === "queued" || search?.status === "running";
   const completed = search?.status === "completed";
@@ -26,8 +36,9 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
       .then((data) => {
         if (controller.signal.aborted) return;
         setSummary(data);
-        if (data.active_search_id) {
-          return requestApi<SearchStatus>(`/api/searches/${encodeURIComponent(data.active_search_id)}`, { signal: controller.signal })
+        const previous = data.active_search_id ?? data.latest_search_id;
+        if (previous) {
+          return requestApi<SearchStatus>(`/api/searches/${encodeURIComponent(previous)}`, { signal: controller.signal })
             .then((active) => { if (!controller.signal.aborted) setSearch(active); });
         }
       })
@@ -108,8 +119,9 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
 
       <section id="resultados" className="card results-card" aria-labelledby="results-title" aria-busy={loadingJobs}>
         <div className="results-heading"><div><span className="eyebrow">SUAS OPORTUNIDADES</span><h2 id="results-title">Vagas encontradas</h2></div><span className="badge badge-remote"><Icon name="globe" /> Remotas</span></div>
-        <div className="table-scroll"><table className="jobs-table"><caption className="sr-only">Vagas por empresa e nome, com link para o anúncio.</caption><thead><tr><th scope="col">Empresa</th><th scope="col">Nome da vaga</th></tr></thead><tbody>
-          {jobs?.items.length ? jobs.items.map((job) => { const href = jobLink(job.url); return <tr key={job.id}><td className="job-cell">{job.company}</td><td className="job-cell">{href ? <a className="text-link" href={href} target="_blank" rel="noreferrer">{job.title} ↗</a> : job.title}</td></tr>; }) : <tr><td colSpan={2}><div className="empty-state"><span className="empty-icon">{loadingJobs || running ? <span className="spinner" aria-hidden="true" /> : <Icon name="briefcase" />}</span><h3>{loadingJobs ? "Carregando suas oportunidades…" : running ? "Estamos procurando por você" : completed ? search.found_count === 0 ? "Nenhuma vaga encontrada nesta pesquisa" : "Suas oportunidades estão sendo carregadas" : "Sua lista de oportunidades começa aqui"}</h3><p>{running ? "Acompanhe a contagem acima. Ao finalizar, suas vagas serão listadas aqui." : completed && search.found_count === 0 ? "Ajuste suas empresas e cargos e tente uma nova busca." : "Suas vagas aparecerão nesta tabela, com links diretos para os anúncios."}</p>{!search && <span className="empty-hint">Nenhuma pesquisa realizada</span>}</div></td></tr>}
+        {!!jobs?.items.length && <p className="mobile-table-hint">Deslize a tabela para ver todas as colunas.</p>}
+        <div className="table-scroll"><table className="jobs-table"><caption className="sr-only">Vagas por empresa e nome, com link para o anúncio.</caption><thead><tr><th scope="col">Empresa</th><th scope="col">Título da vaga</th><th scope="col">Remoto/Híbrido</th></tr></thead><tbody>
+          {jobs?.items.length ? jobs.items.map((job) => { const href = jobLink(job.url); return <tr key={job.id}><td className="job-cell">{job.company}</td><td className="job-cell">{href ? <a className="text-link" href={href} target="_blank" rel="noreferrer">{job.title} ↗</a> : job.title}</td><td className="job-cell modality-cell"><span className="badge badge-remote">{job.modality === "remote" ? "Remoto" : job.modality === "hybrid" ? "Híbrido" : job.modality === "onsite" ? "Presencial" : "Não informado"}</span></td></tr>; }) : <tr><td colSpan={3}><div className="empty-state"><span className="empty-icon">{loadingJobs || running ? <span className="spinner" aria-hidden="true" /> : <Icon name="briefcase" />}</span><h3>{loadingJobs ? "Carregando suas oportunidades…" : running ? "Estamos procurando por você" : completed ? search.found_count === 0 ? "Nenhuma vaga encontrada nesta pesquisa" : "Suas oportunidades estão sendo carregadas" : "Sua lista de oportunidades começa aqui"}</h3><p>{running ? "Acompanhe a contagem acima. Ao finalizar, suas vagas serão listadas aqui." : completed && search.found_count === 0 ? "Ajuste suas empresas e cargos e tente uma nova busca." : "Suas vagas aparecerão nesta tabela, com links diretos para os anúncios."}</p>{!search && <span className="empty-hint">Nenhuma pesquisa realizada</span>}</div></td></tr>}
         </tbody></table></div>
         {jobs && jobs.total > jobs.page_size && <nav className="pagination" aria-label="Paginação de vagas"><button className="button button-secondary button-small" disabled={page <= 1 || loadingJobs} onClick={() => setPage(page - 1)}>Anterior</button><span>Página {jobs.page} de {Math.ceil(jobs.total / jobs.page_size)}</span><button className="button button-secondary button-small" disabled={page >= Math.ceil(jobs.total / jobs.page_size) || loadingJobs} onClick={() => setPage(page + 1)}>Próxima</button></nav>}
       </section>
