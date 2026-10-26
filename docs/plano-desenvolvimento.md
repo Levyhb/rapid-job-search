@@ -180,4 +180,6 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 
 **Etapa 8: ampliar a cobertura conforme novas empresas forem priorizadas.** As etapas 5–7 foram entregues com as fontes Alice/InHire, Afya/Gupy e Arco/Greenhouse, execução RQ e resultados paginados. Evidências e limites em `docs/coleta-portais.md`.
 
+Inspeção das 18 fontes que falharam concluída em 26/10/2026, incluindo a URL atualizada da Meta/Insi. Foram identificados caminhos de adaptação para 17 e bloqueio na rota pública do Escavador. Descoberta de Greenhouse/Gupy em sites próprios, novos parsers e APIs paginadas ainda serão implementados; evidências e prioridades em `docs/inspecao-portais-2026-10-26.md`.
+
 Atualização de suporte: validação assíncrona ao cadastrar/editar URL e rótulos Compatível/Precisa de adaptação/Acesso bloqueado nas respostas e logs. Rede sem confirmação fica inconclusiva. Indicador de exclamação, contagem de erros e modal serão uma melhoria futura. Detalhes em `docs/validacao-suporte-portais.md`.
