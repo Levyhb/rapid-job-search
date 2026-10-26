@@ -133,6 +133,27 @@ class CompanyCatalog:
             self._write(catalog)
             return company
 
+    def save_batch(self, entries: list[CompanyInput]) -> list[Company]:
+        with self._locked():
+            catalog = self._read()
+            if len(catalog.empresas) + len(entries) > 10000:
+                raise CatalogError("O cadastro excede o limite de 10.000 empresas.", 422)
+            seen = {signature(item) for item in catalog.empresas}
+            added = []
+            for data in entries:
+                key = signature(data)
+                if key in seen:
+                    raise CatalogError(
+                        f"{data.nome}: esta empresa com esse link já está cadastrada "
+                        "ou repetida na lista.",
+                        409,
+                    )
+                seen.add(key)
+                added.append(Company(id=str(uuid4()), **data.model_dump()))
+            catalog.empresas.extend(added)
+            self._write(catalog)
+            return added
+
     def remove(self, company_id: str):
         with self._locked():
             catalog = self._read()

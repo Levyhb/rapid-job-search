@@ -35,6 +35,11 @@ class Company(CompanyInput):
     id: str = Field(min_length=1)
 
 
+class CompanyBatch(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    empresas: list[CompanyInput] = Field(min_length=1, max_length=10000)
+
+
 class Catalog(BaseModel):
     model_config = ConfigDict(extra="forbid")
     versao: Literal[1] = 1

@@ -192,6 +192,28 @@ h1, h2, h3, p { margin: 0; }
 .modal-footer { flex-shrink: 0; padding: 18px 28px 24px; border-top: 1px solid var(--border); background: #fbfbfe; }
 .modal-footer-note { margin-bottom: 12px; color: var(--muted); font-size: 12px; }
 .modal-footer .modal-actions { margin-top: 0; }
+.modal-batch { width: min(760px, calc(100vw - 48px)); height: min(740px, calc(100dvh - 48px)); }
+.modal-batch .modal-heading { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.modal-batch .modal-content { display: flex; flex: 1; flex-direction: column; gap: 20px; }
+.modal-batch .modal-description { margin-bottom: 0; }
+.modal-batch .modal-content > :not(.batch-company-list) { flex-shrink: 0; }
+.batch-company-form { display: grid; grid-template-columns: 1fr 1.4fr; gap: 16px; align-items: end; }
+.modal .batch-company-form .field { margin: 0; }
+.batch-company-form .button { grid-column: 1 / -1; justify-self: end; }
+.modal .batch-company-form input { min-height: 48px; font-size: 14px; }
+.batch-list-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.batch-list-heading h3 { font-size: 14px; font-weight: 600; }
+.batch-list-heading > span { color: var(--muted); font-size: 11px; }
+.batch-company-list { flex: 1; min-height: 140px; max-height: 320px; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--border); border-radius: 10px; }
+.batch-company-list li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.batch-company-list li:last-child { border-bottom: 0; }
+.batch-company-list li > div { min-width: 0; }
+.batch-company-list strong { display: block; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.batch-company-list li span { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.batch-company-list .icon-button { flex-shrink: 0; }
+.batch-list-empty { min-height: 140px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; color: var(--muted); text-align: center; font-size: 13px; }
+.batch-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.batch-footer .modal-footer-note { margin: 0; }
 .import-preview { padding: 12px; margin-top: 16px; border: 1px solid var(--border); background: var(--background); border-radius: 9px; font-size: 12px; }
 .import-preview > ul { list-style: disc; padding-left: 18px; max-height: 120px; overflow: auto; margin-top: 10px; color: #a22c40; overflow-wrap: anywhere; }
 .import-preview .import-valid-list { color: var(--foreground); }
@@ -287,6 +309,8 @@ h1, h2, h3, p { margin: 0; }
   .modal-footer .modal-actions > :last-child:nth-child(3) { grid-column: 1 / -1; }
   .modal-footer .button { padding-inline: 10px; }
   .modal-document .json-editor { padding: 14px; }
+  .batch-company-form { grid-template-columns: 1fr; }
+  .batch-company-form .button { width: 100%; }
   html { scroll-padding-top: 122px; }
   .header-inner { padding: 16px 20px 10px; flex-wrap: wrap; gap: 10px; }
   .brand { font-size: 20px; }

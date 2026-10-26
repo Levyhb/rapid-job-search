@@ -4,7 +4,9 @@ Implementado em 25/10/2026.
 
 ## Uso
 
-Na aba **Empresas e cargos**, use **Adicionar empresa** para abrir um formulário vazio com nome e link. Cada salvamento adiciona uma empresa. O menu de três pontos permite editar ou remover; a remoção pede confirmação. As três operações exibem toast após a confirmação do servidor.
+Na aba **Empresas e cargos**, use **Adicionar empresa** para abrir o modal com título e X no cabeçalho. Preencha nome/link e clique em **Adicionar** para colocar uma empresa na lista temporária. Os campos são limpos para adicionar a próxima, sem fechar o modal ou gravar no servidor. O X de cada linha retira a empresa dessa lista. A lista tem rolagem própria; o botão **Salvar** fica no rodapé e grava todas as empresas juntas. Fechar o modal descarta a lista ainda não salva. Campos preenchidos precisam ser adicionados à lista antes de salvar, para evitar perda silenciosa.
+
+O servidor revalida o lote inteiro e grava uma única vez: empresa inválida ou duplicada impede a gravação de todo o lote. Em caso de falha, o modal preserva a lista para corrigir ou tentar novamente. Após salvar, agenda a validação de cada portal e exibe confirmação. O menu de três pontos da lista principal continua permitindo editar ou remover empresas já salvas.
 
 As linhas têm altura fixa de 62 px, no formato Nome | Link | Ações. A região da lista tem altura de 360 px e rolagem vertical própria. Nomes e URLs longos são truncados visualmente; o valor completo aparece ao passar o mouse. O filtro por nome ignora caixa e acentos e não altera o catálogo salvo.
 
@@ -46,6 +48,7 @@ O arquivo `docs/empresas-modelo.json` fornece o formato vazio. A lista real do u
 |---|---|---|
 | GET | `/api/companies` | Lista com ID, nome e URL |
 | POST | `/api/companies` | Adiciona `{nome, url}` |
+| POST | `/api/companies/batch` | Adiciona `{empresas: [{nome, url}]}` em uma gravação atômica, retornando empresas com IDs; rejeita lote vazio, inválido ou duplicado |
 | PATCH | `/api/companies/{id}` | Edita nome/URL mantendo ID |
 | DELETE | `/api/companies/{id}` | Remove a empresa |
 | GET | `/api/companies/export` | Documento compartilhável completo |
@@ -57,6 +60,7 @@ Links aceitos: HTTP/HTTPS sem credenciais. A API não acessa o portal ao cadastr
 
 ## Validação
 
+- Cadastro em lote: suíte completa do backend com 45 testes aprovados, incluindo lote persistido com IDs, agendamento da validação por empresa e rejeição sem gravação parcial para duplicatas/dados inválidos. Verificação no Chromium com 16 inclusões temporárias, remoção, duplicata, erro/reenvio, fechamento e rolagem em desktop/mobile; os envios dessa verificação de interface foram interceptados para preservar o catálogo real.
 - 11 testes do backend: CRUD e persistência, identidade, duplicatas, links inválidos, importação/exportação reversível, importação inválida sem gravação, arquivo corrompido preservado, concorrência entre processos e checks anteriores de saúde/CORS.
 - Fluxo no Chromium conectado à API real, com catálogo isolado em `work/`: cadastro vazio, salvar/editar/remover e toasts, filtro com acentos, prévia de importação, duplicatas/linhas inválidas, copiar JSON com indentação, exportar catálogo completo mesmo filtrado, recarregar e atualizar resumo.
 - Rolagem e altura fixa verificadas; navegação por teclado, Escape/foco do modal e viewports de 320/390/768 px sem overflow da página.

@@ -1,6 +1,7 @@
 import json
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -9,6 +10,7 @@ from app.api.companies import get_catalog
 from app.main import app
 from app.schemas.company import CompanyInput
 from app.services.company_catalog import CompanyCatalog
+from app.services.portal_validation import get_validation_service
 
 
 @pytest.fixture
@@ -61,6 +63,42 @@ def test_duplicates_and_invalid_urls_do_not_modify_file(client, catalog_path):
     for url in ["javascript:alert(1)", "ftp://example.org", "https://user:pass@example.org", "bad"]:
         assert client.post("/api/companies", json={"nome": "Outra", "url": url}).status_code == 422
     assert catalog_path.read_bytes() == before
+
+
+def test_batch_persists_together_and_schedules_each_portal(client, catalog_path):
+    validator = MagicMock()
+    previous = app.dependency_overrides[get_validation_service]
+    app.dependency_overrides[get_validation_service] = lambda: validator
+    entries = [
+        {"nome": "Empresa A", "url": "https://example.org/a"},
+        {"nome": "Empresa B", "url": "https://example.org/b"},
+    ]
+    try:
+        response = client.post("/api/companies/batch", json={"empresas": entries})
+        assert response.status_code == 201
+        saved = response.json()
+        assert len({item["id"] for item in saved}) == 2
+        assert [item.model_dump() for item in CompanyCatalog(catalog_path).list()] == saved
+        assert validator.schedule.call_count == 2
+        assert [call.args[0] for call in validator.schedule.call_args_list] == saved
+    finally:
+        app.dependency_overrides[get_validation_service] = previous
+
+
+def test_batch_invalid_or_duplicate_never_saves_partially(client, catalog_path):
+    existing = {"nome": "Ação Tech", "url": "https://example.org/"}
+    client.post("/api/companies", json=existing)
+    before = catalog_path.read_bytes()
+    valid = {"nome": "Nova", "url": "https://example.org/nova"}
+    for entries, status in [
+        ([], 422),
+        ([valid, {"nome": "Inválida", "url": "ftp://example.org"}], 422),
+        ([valid, {"nome": "acao tech", "url": "https://EXAMPLE.org"}], 409),
+        ([valid, valid], 409),
+    ]:
+        response = client.post("/api/companies/batch", json={"empresas": entries})
+        assert response.status_code == status
+        assert catalog_path.read_bytes() == before
 
 
 def test_import_review_roundtrip_and_duplicate_skip(client):

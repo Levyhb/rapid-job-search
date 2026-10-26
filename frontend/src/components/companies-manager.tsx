@@ -22,6 +22,8 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
   const [dialog, setDialog] = useState<DialogState | null>(null);
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
+  const [pendingCompanies, setPendingCompanies] = useState<(CompanyData & { key: string })[]>([]);
+  const companyNameInput = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [jsonText, setJsonText] = useState("");
@@ -59,6 +61,7 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
     setPreview(null);
     setJsonText("");
     setCopied(false);
+    setPendingCompanies([]);
     setName(next.kind === "edit" ? next.company.nome : "");
     setUrl(next.kind === "edit" ? next.company.url : "");
     setDialog(next);
@@ -72,17 +75,55 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
 
   async function save(event: FormEvent) {
     event.preventDefault();
-    if (!dialog || (dialog.kind !== "add" && dialog.kind !== "edit") || busy) return;
+    if (dialog?.kind !== "edit" || busy) return;
     if (!name.trim() || !url.trim()) { setError("Preencha o nome e o link da empresa."); return; }
     setBusy(true);
     setError("");
     try {
-      const editing = dialog.kind === "edit";
-      const saved = await requestApi<Company>(editing ? `/api/companies/${encodeURIComponent(dialog.company.id)}` : "/api/companies", {
-        method: editing ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: name.trim(), url: url.trim() }),
+      const saved = await requestApi<Company>(`/api/companies/${encodeURIComponent(dialog.company.id)}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: name.trim(), url: url.trim() }),
       });
-      setCompanies((current) => editing ? current.map((item) => item.id === saved.id ? saved : item) : [...current, saved]);
-      confirmed(editing ? "Empresa atualizada com sucesso." : "Empresa cadastrada com sucesso.");
+      setCompanies((current) => current.map((item) => item.id === saved.id ? saved : item));
+      confirmed("Empresa atualizada com sucesso.");
+    } catch (failure) { setError(message(failure)); }
+    finally { setBusy(false); }
+  }
+
+  function queueCompany(event: FormEvent) {
+    event.preventDefault();
+    if (busy) return;
+    setError("");
+    const entry = { nome: name.trim(), url: url.trim() };
+    if (!entry.nome || !entry.url) { setError("Preencha o nome e o link da empresa."); return; }
+    try {
+      const parsed = new URL(entry.url);
+      if (!["http:", "https:"].includes(parsed.protocol) || parsed.username || parsed.password || /\s|\\/.test(entry.url)) throw new Error();
+    } catch { setError("Informe um link HTTP ou HTTPS válido, sem credenciais ou espaços."); return; }
+    const signature = (item: CompanyData) => `${normalized(item.nome).replace(/\s+/g, " ")}|${new URL(item.url).href}`;
+    if ([...companies, ...pendingCompanies].some((item) => signature(item) === signature(entry))) {
+      setError("Esta empresa com esse link já está cadastrada ou na lista para adicionar."); return;
+    }
+    if (companies.length + pendingCompanies.length >= 10000) { setError("O cadastro atingiu o limite de 10.000 empresas."); return; }
+    setPendingCompanies((current) => [...current, { ...entry, key: crypto.randomUUID() }]);
+    setName(""); setUrl("");
+    companyNameInput.current?.focus();
+  }
+
+  async function saveBatch() {
+    if (busy || !pendingCompanies.length) return;
+    if (name.trim() || url.trim()) {
+      setError("Clique em Adicionar para incluir os campos preenchidos na lista antes de salvar.");
+      companyNameInput.current?.focus();
+      return;
+    }
+    setBusy(true); setError("");
+    try {
+      const saved = await requestApi<Company[]>("/api/companies/batch", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresas: pendingCompanies.map(({ nome, url }) => ({ nome, url })) }),
+      });
+      setCompanies((current) => [...current, ...saved]);
+      confirmed(`${saved.length} ${saved.length === 1 ? "empresa cadastrada" : "empresas cadastradas"} com sucesso.`);
     } catch (failure) { setError(message(failure)); }
     finally { setBusy(false); }
   }
@@ -187,11 +228,14 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
       <div className="toast-region" role="status" aria-live="polite" aria-atomic="true">{toast && <div className="toast"><Icon name="check" /><span>{toast.message}</span><button className="icon-button" aria-label="Fechar confirmação" onClick={() => setToast(null)}><Icon name="close" /></button></div>}</div>
 
       {dialog && <Modal
-        variant={dialog.kind === "import" || dialog.kind === "export" ? "document" : dialog.kind === "remove" ? "default" : "form"}
+        variant={dialog.kind === "add" ? "batch" : dialog.kind === "import" || dialog.kind === "export" ? "document" : dialog.kind === "remove" ? "default" : "form"}
         title={title}
         onClose={() => setDialog(null)}
         busy={busy}
-        footer={dialog.kind === "export" ? <>
+        footer={dialog.kind === "add" ? <div className="batch-footer">
+          <p className="modal-footer-note" role="status">{pendingCompanies.length} {pendingCompanies.length === 1 ? "empresa para adicionar" : "empresas para adicionar"}</p>
+          <button className="button button-primary" onClick={() => void saveBatch()} disabled={busy || !pendingCompanies.length}><Icon name="check" />{busy ? "Salvando…" : "Salvar"}</button>
+        </div> : dialog.kind === "export" ? <>
           <p className="modal-footer-note">Lista completa, pronta para compartilhar.</p>
           <div className="modal-actions">
             <button className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Fechar</button>
@@ -206,7 +250,23 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
           </div>
         </> : undefined}
       >
-        {(dialog.kind === "add" || dialog.kind === "edit") && <form onSubmit={save}>
+        {dialog.kind === "add" && <>
+          <p className="modal-description">Preencha os dados e clique em Adicionar. Monte sua lista e salve todas as empresas ao finalizar.</p>
+          <form className="batch-company-form" onSubmit={queueCompany}>
+            <div className="field"><label htmlFor="batch-company-name">Nome da empresa</label><input ref={companyNameInput} data-autofocus id="batch-company-name" placeholder="Ex.: Nome da empresa" maxLength={200} required value={name} onChange={(event) => setName(event.target.value)} disabled={busy} /></div>
+            <div className="field"><label htmlFor="batch-company-url">Link da empresa</label><input id="batch-company-url" type="url" placeholder="https://empresa.com/carreiras" maxLength={2048} required value={url} onChange={(event) => setUrl(event.target.value)} disabled={busy} /></div>
+            <button type="submit" className="button button-secondary" disabled={busy}><Icon name="plus" />Adicionar</button>
+          </form>
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <div className="batch-list-heading"><h3>Empresas a adicionar</h3><span>Salvas somente ao finalizar</span></div>
+          <div className="batch-company-list" role="region" aria-label="Empresas a adicionar" tabIndex={0}>
+            {pendingCompanies.length ? <ul>{pendingCompanies.map((company) => <li key={company.key}>
+              <div><strong>{company.nome}</strong><span>{company.url}</span></div>
+              <button className="icon-button" aria-label={`Remover ${company.nome} da lista`} disabled={busy} onClick={() => { setPendingCompanies((current) => current.filter((item) => item.key !== company.key)); setError(""); }}><Icon name="close" /></button>
+            </li>)}</ul> : <div className="batch-list-empty"><Icon name="building" /><p>As empresas adicionadas aparecerão aqui.</p></div>}
+          </div>
+        </>}
+        {dialog.kind === "edit" && <form onSubmit={save}>
           <p className="modal-description">Informe o nome e o endereço do portal de carreiras da empresa.</p>
           <div className="field"><label htmlFor="company-name">Nome da empresa</label><input data-autofocus id="company-name" placeholder="Ex.: Nome da empresa" maxLength={200} required value={name} onChange={(event) => setName(event.target.value)} disabled={busy} /></div>
           <div className="field"><label htmlFor="company-url">Link da empresa</label><input id="company-url" type="url" placeholder="https://empresa.com/carreiras" maxLength={2048} required value={url} onChange={(event) => setUrl(event.target.value)} disabled={busy} /></div>

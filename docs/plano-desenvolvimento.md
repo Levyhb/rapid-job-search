@@ -67,6 +67,8 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 **Branch entregue:** `feature/cadastro-empresas`. Cadastro, edição, remoção, filtro, lista fixa com rolagem e toasts implementados; detalhes em `docs/cadastro-empresas.md`.
 
+Melhoria entregue: modal **Adicionar empresa** com lista temporária, inclusão sucessiva e remoção por X; **Salvar** persiste todo o lote atomicamente. Cabeçalho e rodapé permanecem visíveis, lista com rolagem e modal em tela cheia no mobile.
+
 **Backend:** definir schema versionado; criar serviço de leitura/escrita de `backend/data/empresas.json` (caminho configurável, arquivo real fora do Git). Gravação atômica e coordenação de escritas concorrentes para impedir perda de dados. Arquivo ausente inicia catálogo vazio; arquivo corrompido não pode ser substituído silenciosamente.
 
 **API proposta:** `GET/POST /api/companies`, `PATCH/DELETE /api/companies/{id}`. Identidade interna estável; impedir duplicatas pela combinação de nome e URL normalizados, preservando URLs necessárias ao portal.

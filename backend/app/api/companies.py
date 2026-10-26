@@ -7,7 +7,7 @@ from app.core.database import get_session
 from app.models.portal_validation import PortalValidation
 from app.models.role import Role
 from app.models.search import SearchRun
-from app.schemas.company import Company, CompanyInput, ImportDocument
+from app.schemas.company import Company, CompanyBatch, CompanyInput, ImportDocument
 from app.services.company_catalog import CompanyCatalog
 from app.services.portal_validation import get_validation_service
 
@@ -32,6 +32,18 @@ def add_company(
     company = catalog.save(data)
     validator.schedule(company.model_dump())
     return company
+
+
+@router.post("/companies/batch", response_model=list[Company], status_code=201)
+def add_companies(
+    data: CompanyBatch,
+    catalog: CompanyCatalog = Depends(get_catalog),
+    validator=Depends(get_validation_service),
+):
+    companies = catalog.save_batch(data.empresas)
+    for company in companies:
+        validator.schedule(company.model_dump())
+    return companies
 
 
 @router.get("/companies/export")
