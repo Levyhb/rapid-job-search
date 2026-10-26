@@ -13,6 +13,7 @@ Cadastrar empresas (nome e URL), configurar cargos e iniciar manualmente uma bus
 - Empresas persistidas em documento JSON local, com importação/exportação no mesmo formato junto do cadastro. PostgreSQL será usado para configurações de busca, execuções e vagas; não haverá dois cadastros de empresas independentes.
 - Cargos são opções alternativas: basta um termo no título. Suportar variações explícitas, incluindo fullstack/full stack/full-stack, backend/back-end e frontend/front-end.
 - Somente vagas com evidência de modalidade remota. Consultar detalhes quando a listagem for inconclusiva; não inferir remoto pela empresa. Preservar restrições territoriais.
+- Resultados finais terão Nome da empresa | Título da vaga (link) | Remoto/Híbrido. Registrar a modalidade da fonte e sua classificação normalizada para exibição e filtros futuros; manter somente remoto no filtro atual.
 - Paginação tanto na coleta dos portais quanto na tabela da aplicação.
 - Contagem durante a busca = vagas compatíveis únicas já persistidas naquela execução. Falhas e duplicatas não entram no contador.
 - Falhas de uma fonte vão para logs no backend e `console.log` no navegador. Não exibir erros de coleta na tela e continuar nas outras empresas. O total corresponde ao que foi encontrado; não afirmar que todos os portais foram consultados com sucesso.
@@ -113,6 +114,8 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 **Backend:** criar contrato comum de vaga e de cobertura. Preferir dados públicos estruturados confiáveis; usar Playwright quando necessário. Percorrer todas as páginas/lotes, buscar detalhes dos candidatos, extrair modalidade e URL direta, limitar tentativas/duração e detectar loops. Aplicar regras da etapa 4.
 
+**Modalidade preservada para as próximas etapas:** cada anúncio deve distinguir remoto, híbrido, presencial e desconhecido, guardando também o rótulo/evidência da fonte. Nunca preencher desconhecido como remoto. A modalidade não participa do match de cargo: após o título corresponder, aplicar separadamente o filtro somente remoto. Um controle futuro poderá incluir híbridas, mas ainda não faz parte da busca atual.
+
 **Identidade:** usar ID da fonte quando disponível; senão URL conservadoramente normalizada. Título sozinho não identifica uma vaga.
 
 **Aceite:** encontrar vaga remota compatível além da primeira página; confirmar término da paginação; preservar resultados quando uma página posterior falhar. Limite atingido registra coleta parcial no diagnóstico interno. Testar com cenário controlado e conferir amostras reais, inclusive descartes.
@@ -135,7 +138,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 **Backend:** `GET /api/searches/{id}/jobs?page=1&page_size=20`, com total e ordenação estável. Consultar apenas as vagas associadas à execução escolhida. Uma vaga encontrada por vários termos não vira múltiplas linhas.
 
-**Frontend:** ao terminar, exibir “Pesquisa finalizada: N vagas encontradas” e tabela Empresa | Nome da vaga. Título clicável abre outra aba. Paginação com anterior/próxima, página atual e total; preservar contexto durante o carregamento e usar indicação de carregamento nos resultados.
+**Frontend:** ao terminar, exibir “Pesquisa finalizada: N vagas encontradas” e tabela Nome da empresa | Título da vaga (link) | Remoto/Híbrido. Título clicável abre outra aba; a terceira coluna apresenta a modalidade confirmada pela fonte. Enquanto o filtro for somente remoto, vagas híbridas continuam excluídas. Paginação com anterior/próxima, página atual e total; preservar contexto durante o carregamento e usar indicação de carregamento nos resultados.
 
 **Aceite:** total final corresponde à quantidade única persistida; páginas não omitem nem repetem linhas; cada título abre seu anúncio; zero resultados tem estado vazio; falhas de portais não aparecem na tabela nem no total. Texto não promete cobertura completa das fontes.
 

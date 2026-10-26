@@ -18,6 +18,8 @@ O endpoint de resumo está implementado para empresas desde 25/10/2026, com o to
 - `GET /api/searches/{id}`: mesma estrutura, com status `queued`, `running`, `completed`, `interrupted` ou `cancelled`.
 - `GET /api/searches/{id}/jobs?page=1&page_size=20`: `{items: [{id, company, title, url}], total, page, page_size}`.
 
+Requisito confirmado em 26/10/2026 para a implementação desse endpoint: acrescentar a modalidade em cada item (`modality`: `remote`, `hybrid`, `onsite` ou `unknown`) e preservar o rótulo original da fonte no armazenamento. A tabela final terá Nome da empresa | Título da vaga (link) | Remoto/Híbrido. Os tipos/coletores e essa coluna serão implementados na etapa de resultados; o filtro atual continua somente remoto, independentemente da possibilidade de classificar vagas híbridas.
+
 O frontend consulta progresso a cada dois segundos, sem porcentagem inventada; falhas transitórias de acompanhamento são registradas no console e tentadas novamente. Mostra resultados após conclusão, com link HTTP(S) direto e paginação. Não soma falhas na contagem.
 
 Enquanto o resumo real não estiver disponível, os totais exibem “—” e o botão fica desabilitado. Não usar zero para representar dados desconhecidos. O cadastro de empresas já está integrado; o cadastro e os seletores de cargos também estão integrados desde a etapa 4.
