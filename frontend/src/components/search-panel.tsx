@@ -16,7 +16,8 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
 
   const running = search?.status === "queued" || search?.status === "running";
   const completed = search?.status === "completed";
-  const canSearch = !!summary && summary.company_count > 0 && summary.selected_role_count > 0;
+  const configured = !!summary && summary.company_count > 0 && summary.selected_role_count > 0;
+  const canSearch = configured && summary?.search_available === true;
 
   useEffect(() => {
     if (!active) return;
@@ -93,7 +94,7 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
 
       <section className="search-bar" aria-labelledby="search-title" aria-busy={starting || running}>
         <div><h2 id="search-title">Encontre suas próximas oportunidades</h2><p>Consulte as empresas cadastradas e acompanhe as vagas remotas dos cargos selecionados.</p>
-          <span className="implementation-note" id="search-prerequisites">{!summary ? "O cadastro e a pesquisa serão conectados nas próximas etapas. Os totais aparecerão assim que os dados estiverem disponíveis." : !canSearch ? "Cadastre pelo menos uma empresa e selecione um cargo na aba Empresas e cargos." : "Tudo pronto. Você já pode realizar sua pesquisa."}</span>
+          <span className="implementation-note" id="search-prerequisites">{!summary ? "O cadastro e a pesquisa serão conectados nas próximas etapas. Os totais aparecerão assim que os dados estiverem disponíveis." : !configured ? "Cadastre pelo menos uma empresa e selecione um cargo na aba Empresas e cargos." : summary.search_available ? "Tudo pronto. Você já pode realizar sua pesquisa." : "Empresas e cargos configurados. A busca será liberada após a integração dos portais."}</span>
         </div>
         <button className="button button-primary search-button" disabled={!canSearch || starting || running} aria-describedby="search-prerequisites" onClick={() => void startSearch()}>{starting || running ? <span className="spinner" aria-hidden="true" /> : <Icon name="search" />}{starting ? "Iniciando pesquisa…" : running ? "Buscando vagas…" : "Buscar vagas"}</button>
       </section>

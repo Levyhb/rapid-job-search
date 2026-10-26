@@ -5,6 +5,7 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import { CompaniesManager } from "@/components/companies-manager";
 import { EnvironmentStatus } from "@/components/environment-status";
 import { Icon } from "@/components/icon";
+import { RolesManager } from "@/components/roles-manager";
 import { SearchPanel } from "@/components/search-panel";
 
 type Tab = "search" | "configuration";
@@ -46,7 +47,7 @@ export default function Home() {
       </header>
 
       <main id="conteudo" className="app-main">
-        <div className="preview-notice"><span className="status-dot" /><strong>Prévia do painel</strong><span>Empresas salvas no servidor. Cadastro de cargos e coleta serão conectados nas próximas etapas.</span></div>
+        <div className="preview-notice"><span className="status-dot" /><strong>Prévia do painel</strong><span>Empresas e cargos salvos no servidor. A coleta de vagas será conectada nas próximas etapas.</span></div>
         <section id="search-panel" role="tabpanel" aria-labelledby="search-tab" hidden={tab !== "search"} tabIndex={0}>
           <section className="hero" aria-labelledby="hero-title">
             <div className="hero-copy">
@@ -70,13 +71,7 @@ export default function Home() {
         <div className="configuration-grid">
           <CompaniesManager onChanged={() => setCompaniesRevision((revision) => revision + 1)} />
 
-          <section id="cargos" className="card" aria-labelledby="roles-title">
-            <div className="card-heading"><span className="section-icon"><Icon name="sliders" /></span><div><h3 id="roles-title">Cargos de interesse</h3><p>Escolha os cargos que você deseja encontrar.</p></div><span className="step-label">02</span></div>
-            <div className="field"><label htmlFor="role">Cargo</label><div className="keyword-input"><input id="role" placeholder="Ex.: Desenvolvedor Backend" disabled /><button className="button button-primary" disabled aria-label="Adicionar cargo"><Icon name="plus" /></button></div></div>
-            <div className="keyword-examples"><span className="field-label">Exemplos de cargos</span><div className="chip-list"><span className="chip">fullstack</span><span className="chip">backend</span><span className="chip">frontend</span></div><p>A vaga deve ter um dos cargos selecionados no título. Estes exemplos ainda não estão cadastrados.</p></div>
-            <div className="remote-rule"><span className="remote-rule-icon"><Icon name="check" /></span><div><strong>Somente trabalho remoto</strong><p>Vagas presenciais e híbridas ficam fora da busca.</p></div></div>
-            <p className="implementation-note">Cadastro e seleção de cargos serão conectados na etapa 4.</p>
-          </section>
+          <RolesManager onChanged={() => setCompaniesRevision((revision) => revision + 1)} />
         </div>
 
 

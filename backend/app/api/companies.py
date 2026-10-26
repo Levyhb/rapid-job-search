@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.core.database import get_session
+from app.models.role import Role
 from app.schemas.company import Company, CompanyInput, ImportDocument
 from app.services.company_catalog import CompanyCatalog
 
@@ -50,10 +54,14 @@ def remove_company(company_id: str, catalog: CompanyCatalog = Depends(get_catalo
 
 
 @router.get("/configuration/summary")
-def configuration_summary(catalog: CompanyCatalog = Depends(get_catalog)):
-    # Ainda não há cadastro de cargos nem execuções de busca implementados.
+def configuration_summary(
+    catalog: CompanyCatalog = Depends(get_catalog), session: Session = Depends(get_session)
+):
     return {
         "company_count": len(catalog.list()),
-        "selected_role_count": 0,
+        "selected_role_count": session.scalar(
+            select(func.count()).select_from(Role).where(Role.selecionado.is_(True))
+        ),
         "active_search_id": None,
+        "search_available": False,
     }

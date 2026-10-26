@@ -11,7 +11,7 @@
 
 ## Contrato preparado no frontend
 
-O endpoint de resumo está implementado para empresas desde 25/10/2026, com cargos=0 e execução=null enquanto essas funções não existem. Os endpoints de pesquisa abaixo **ainda serão implementados no backend** nas etapas funcionais do roteiro. A entrega atual é a reorganização do frontend. Não há coletor ou busca simulada no produto.
+O endpoint de resumo está implementado para empresas desde 25/10/2026, com o total real de cargos selecionados desde 26/10/2026; execução=null e search_available=false enquanto a coleta não existe. Os endpoints de pesquisa abaixo **ainda serão implementados no backend** nas etapas funcionais do roteiro. A entrega atual é a reorganização do frontend. Não há coletor ou busca simulada no produto.
 
 - `GET /api/configuration/summary`: `{company_count, selected_role_count, active_search_id}`. Contagem apenas de cargos selecionados; ID ativo permite retomar acompanhamento após recarregar.
 - `POST /api/searches`: retorna HTTP 202 com `{id, status, found_count}`.
@@ -20,7 +20,7 @@ O endpoint de resumo está implementado para empresas desde 25/10/2026, com carg
 
 O frontend consulta progresso a cada dois segundos, sem porcentagem inventada; falhas transitórias de acompanhamento são registradas no console e tentadas novamente. Mostra resultados após conclusão, com link HTTP(S) direto e paginação. Não soma falhas na contagem.
 
-Enquanto o resumo real não estiver disponível, os totais exibem “—” e o botão fica desabilitado. Não usar zero para representar dados desconhecidos. O cadastro de empresas já está integrado; os seletores de cargos permanecem pendentes da etapa 4.
+Enquanto o resumo real não estiver disponível, os totais exibem “—” e o botão fica desabilitado. Não usar zero para representar dados desconhecidos. O cadastro de empresas já está integrado; o cadastro e os seletores de cargos também estão integrados desde a etapa 4.
 
 ## Validação
 

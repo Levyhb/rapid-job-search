@@ -2,6 +2,7 @@ export type ConfigurationSummary = {
   company_count: number;
   selected_role_count: number;
   active_search_id: string | null;
+  search_available?: boolean;
 };
 
 export type SearchStatus = {

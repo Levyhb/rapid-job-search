@@ -4,9 +4,9 @@ Painel pessoal para buscar vagas remotas nos portais das empresas cadastradas.
 
 ## Estado atual
 
-Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos e coleta de vagas continuam pendentes; seus controles estão desabilitados.
+Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos, seleção, variações e prévia de títulos também funcionam, com persistência no PostgreSQL. A coleta de vagas continua pendente; o botão de busca permanece desabilitado.
 
-O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–3 concluídas; próxima entrega funcional: cadastro e seleção de cargos. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
+O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–4 concluídas; próxima entrega funcional: validar fontes e implementar o primeiro coletor. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
 
 ## Stack
 
@@ -32,14 +32,14 @@ Na raiz do projeto:
 powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
 ```
 
-O setup cria os arquivos locais de configuração se não existirem, instala dependências, prepara Chromium, inicia PostgreSQL/Redis e executa migrações. Não é necessário ativar o ambiente virtual. A estrutura Alembic está preparada; ainda não existem tabelas de domínio.
+O setup cria os arquivos locais de configuração se não existirem, instala dependências, prepara Chromium, inicia PostgreSQL/Redis e executa migrações. Não é necessário ativar o ambiente virtual. O Alembic aplica a migração da tabela de cargos; as tabelas de execução e vagas entram nas próximas etapas.
 
 ## Executar
 
-Use terminais separados na raiz do projeto:
+Com Docker Desktop aberto, execute `.\scripts\dev.ps1 infra`. Depois use terminais separados na raiz do projeto:
 
 ```powershell
-# Terminal 1: API com recarregamento automático
+# Terminal 1: API (aplica migrações e inicia com recarregamento automático)
 .\scripts\dev.ps1 api
 
 # Terminal 2: frontend com recarregamento automático
@@ -108,4 +108,6 @@ O worker é a base de execução; tarefas reais de busca ainda não foram implem
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
 - `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas está em `feature/cadastro-empresas`. O remoto GitHub será configurado posteriormente.
+Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas foi integrado em `develop`; os cargos estão em `feature/cargos-filtros`. O remoto GitHub será configurado posteriormente.
+
+Detalhes dos cargos, regras e comandos manuais: [docs/cargos-e-execucao.md](docs/cargos-e-execucao.md).

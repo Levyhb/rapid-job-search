@@ -1,6 +1,6 @@
 # RapidJobSearch — plano de desenvolvimento por etapas
 
-Atualizado em 25/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
+Atualizado em 26/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
 
 ## Objetivo da primeira versão
 
@@ -37,7 +37,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 | 1 | Identidade, layout base e CSS global | 0 | Concluída |
 | 2 | Cadastro de empresas com persistência JSON | 1 | Concluída |
 | 3 | Importação/exportação de empresas | 2 | Concluída |
-| 4 | Cargos e regras de vagas remotas | 1, 0 | Pendente |
+| 4 | Cargos e regras de vagas remotas | 1, 0 | Concluída |
 | 5 | Validar fontes e coletar um portal inteiro | 2, 4 | Pendente; requer amostra real de URLs |
 | 6 | Pesquisa em segundo plano e progresso | 5 | Pendente |
 | 7 | Resultados paginados e total final | 6 | Pendente |
@@ -97,7 +97,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 ## Etapa 4 — cargos e filtro remoto
 
-**Branch:** `feature/cargos-filtros`.
+**Branch:** `feature/cargos-filtros`. Entregue: CRUD, seleção, variações explícitas, prévia no backend e regras de correspondência/modalidade. Evidências em `docs/cargos-e-execucao.md`.
 
 **Backend:** persistir cargos no PostgreSQL com migração. Implementar regra de alternativas no título, normalização de caixa/acentos/separadores e limites de palavras. Variações aceitas precisam estar documentadas e visíveis. Não usar a descrição para satisfazer o cargo por padrão.
 
@@ -170,4 +170,4 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 
 ## Próxima etapa funcional
 
-**Etapa 4: implementar cadastro e seleção de cargos e regras de filtro remoto.** Cadastro de empresas e importação/exportação já funcionam no servidor; cargos e coletas continuam pendentes. Evidências e contrato em `docs/cadastro-empresas.md`.
+**Etapa 5: validar uma amostra real de URLs e implementar o primeiro coletor completo.** Empresas, cargos, seleção, variações e regras já funcionam no servidor; coleta e execução continuam pendentes. Evidências em `docs/cargos-e-execucao.md`.
