@@ -170,6 +170,7 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 - Empresas e cargos na aba de configuração, com atalho para voltar à busca.
 - Aba de busca com quantidades de empresas cadastradas/cargos selecionados, botão, loading/contador e resultados logo abaixo. Antes da primeira consulta, preservar o estado vazio de Vagas encontradas.
 - Tabela com foco no nome da empresa e título da vaga, sem informações técnicas no fluxo de pesquisa.
+- Filtros avançados recolhíveis abaixo de Vagas encontradas: nome, empresa/cargo cadastrados com selects pesquisáveis e loading, e níveis iniciais Júnior/Pleno/Sênior/Especialista. Combinação antes da paginação, total filtrado e botão para limpar; cadastro de níveis fica para depois. Detalhes em `docs/filtros-avancados.md`.
 - Controles com labels, foco visível, estados disabled/loading, teclado e suporte a telas pequenas.
 - Modais de cadastro/edição de empresas e cargos com altura mínima de 620px no desktop, limitada à altura disponível; no mobile, tela cheia com rolagem interna e cabeçalho fixo no modal.
 - Importação/exportação JSON em modal amplo (até 900 × 800px), tela cheia no mobile, cabeçalho e ações fixos, editor legível, revisão antes de salvar e exportação por cópia ou download do arquivo formatado.

@@ -13,6 +13,8 @@ from app.api.companies import get_catalog
 from app.collectors.support import support_diagnostic
 from app.core.config import get_settings
 from app.core.database import get_session
+from app.filters.levels import LEVELS
+from app.filters.role_matching import match_title, normalize_term
 from app.models.role import Role
 from app.models.search import SearchJob, SearchRun
 from app.services.company_catalog import CompanyCatalog
@@ -122,6 +124,11 @@ def start_search(
     return run_payload(run, session)
 
 
+@router.get("/levels")
+def list_levels():
+    return LEVELS
+
+
 @router.get("/{run_id}")
 def search_status(run_id: str, session: Session = Depends(get_session), queue=Depends(get_queue)):
     run = session.get(SearchRun, run_id)
@@ -144,20 +151,42 @@ def search_jobs(
     run_id: str,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
+    q: str = Query("", max_length=200),
+    company_id: str | None = None,
+    role_id: str | None = None,
+    level_id: str | None = None,
     session: Session = Depends(get_session),
+    catalog: CompanyCatalog = Depends(get_catalog),
 ):
     if not session.get(SearchRun, run_id):
         raise HTTPException(404, "Pesquisa não encontrada.")
-    total = session.scalar(
-        select(func.count()).select_from(SearchJob).where(SearchJob.run_id == run_id)
-    )
-    jobs = session.scalars(
-        select(SearchJob)
-        .where(SearchJob.run_id == run_id)
-        .order_by(SearchJob.created_at.desc(), SearchJob.id)
-        .offset((page - 1) * page_size)
-        .limit(page_size)
-    ).all()
+    query = select(SearchJob).where(SearchJob.run_id == run_id)
+    if company_id:
+        company = next((item for item in catalog.list() if item.id == company_id), None)
+        if not company:
+            raise HTTPException(422, "Selecione uma empresa cadastrada.")
+        query = query.where(SearchJob.company == company.nome)
+    role = session.get(Role, role_id) if role_id else None
+    if role_id and not role:
+        raise HTTPException(422, "Selecione um cargo cadastrado.")
+    level = next((item for item in LEVELS if item["id"] == level_id), None)
+    if level_id and not level:
+        raise HTTPException(422, "Selecione um nível disponível.")
+    query = query.order_by(SearchJob.created_at.desc(), SearchJob.id)
+    if q.strip() or role or level:
+        candidates = session.scalars(query).all()
+        text = normalize_term(q)
+        filtered = [
+            job for job in candidates
+            if (not text or text in normalize_term(f"{job.company} {job.title}"))
+            and (not role or match_title(job.title, role.nome, role.variacoes))
+            and (not level or match_title(job.title, level["nome"], level["variacoes"]))
+        ]
+        total = len(filtered)
+        jobs = filtered[(page - 1) * page_size:page * page_size]
+    else:
+        total = session.scalar(select(func.count()).select_from(query.subquery()))
+        jobs = session.scalars(query.offset((page - 1) * page_size).limit(page_size)).all()
     return {
         "items": [
             {

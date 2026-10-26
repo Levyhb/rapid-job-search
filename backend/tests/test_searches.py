@@ -116,3 +116,49 @@ def test_pagination_and_worker_crash_recovery(configured):
     assert len(client.get(f"/api/searches/{run_id}/jobs?page=2").json()["items"]) == 3
     assert client.get(f"/api/searches/{run_id}/jobs?page=0").status_code == 422
     assert client.get("/api/searches/missing").status_code == 404
+
+
+def test_advanced_filters_apply_before_pagination_and_combine(configured):
+    client, _, catalog = configured
+    run_id = client.post("/api/searches").json()["id"]
+    role = client.get("/api/roles").json()[0]
+    company = next(item for item in catalog.list() if item.nome == "Boa")
+    factory = contextmanager(app.dependency_overrides[get_session])
+    with factory() as session:
+        run = session.get(SearchRun, run_id)
+        run.status, run.active_key = "completed", None
+        for index in range(24):
+            session.add(SearchJob(
+                run_id=run_id, identity=str(index), company="Boa",
+                title=f"Dev Backend JR {index}", url=f"https://example.org/{index}",
+                modality="remote", modality_original="Remoto", location="Brasil", matches=[],
+            ))
+        for index, title in enumerate([
+            "Dev Backend Júnior", "Dev Backend PL", "Dev Backend Sr.",
+            "Dev Backend SÊNIOR", "Dev Backend Specialist", "Dev Backend Especialista",
+            "DevOps Junior", "Dev Backend", "Dev Backend JrDeveloper",
+        ]):
+            session.add(SearchJob(
+                run_id=run_id, identity=f"extra-{index}", company="Falha", title=title,
+                url=f"https://example.org/extra/{index}", modality="remote",
+                modality_original="Remoto", location="Brasil", matches=[],
+            ))
+        session.commit()
+    path = f"/api/searches/{run_id}/jobs"
+    combined = {"company_id": company.id, "role_id": role["id"], "level_id": "junior"}
+    first = client.get(path, params=combined).json()
+    assert first["total"] == 24 and len(first["items"]) == 20
+    second = client.get(path, params={**combined, "page": 2}).json()
+    assert second["total"] == 24 and len(second["items"]) == 4
+    assert not {row["id"] for row in first["items"]} & {row["id"] for row in second["items"]}
+    assert client.get(path, params={**combined, "q": "falha"}).json()["total"] == 0
+    assert client.get(path, params={"q": "JUNIOR", "role_id": role["id"]}).json()["total"] == 1
+    assert client.get(path, params={"level_id": "junior"}).json()["total"] == 26
+    assert client.get(path, params={"level_id": "pleno"}).json()["total"] == 1
+    assert client.get(path, params={"level_id": "senior"}).json()["total"] == 2
+    assert client.get(path, params={"level_id": "especialista"}).json()["total"] == 2
+    assert client.get(path).json()["total"] == 33
+    assert client.get(f"/api/searches/{run_id}").json()["found_count"] == 33
+    for key in ["company_id", "role_id", "level_id"]:
+        assert client.get(path, params={key: "missing"}).status_code == 422
+    assert len(client.get("/api/searches/levels").json()) == 4
