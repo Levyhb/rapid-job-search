@@ -36,6 +36,16 @@ O setup cria os arquivos locais de configuração se não existirem, instala dep
 
 ## Executar
 
+Atalho para iniciar apenas o backend, usando o ambiente virtual e aplicando migrações:
+
+```powershell
+cd backend
+py run
+```
+
+Também funciona com `py run.py`. A API abre em `http://127.0.0.1:8000`; `Ctrl+C` encerra.
+Para outra porta: `py run --port 8001`. PostgreSQL precisa estar iniciado.
+
 Com Docker Desktop aberto, execute `.\scripts\dev.ps1 infra`. Depois use terminais separados na raiz do projeto:
 
 ```powershell
