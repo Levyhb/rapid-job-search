@@ -173,7 +173,7 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
 
       <div className="toast-region" role="status" aria-live="polite" aria-atomic="true">{toast && <div className="toast"><Icon name="check" /><span>{toast.message}</span><button className="icon-button" aria-label="Fechar confirmação" onClick={() => setToast(null)}><Icon name="close" /></button></div>}</div>
 
-      {dialog && <Modal title={title} onClose={() => setDialog(null)} busy={busy}>
+      {dialog && <Modal variant={dialog.kind === "add" || dialog.kind === "edit" ? "form" : "default"} title={title} onClose={() => setDialog(null)} busy={busy}>
         {(dialog.kind === "add" || dialog.kind === "edit") && <form onSubmit={save}>
           <p className="modal-description">Informe o nome e o endereço do portal de carreiras da empresa.</p>
           <div className="field"><label htmlFor="company-name">Nome da empresa</label><input data-autofocus id="company-name" placeholder="Ex.: Nome da empresa" maxLength={200} required value={name} onChange={(event) => setName(event.target.value)} disabled={busy} /></div>

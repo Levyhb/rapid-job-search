@@ -169,6 +169,7 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 - Aba de busca com quantidades de empresas cadastradas/cargos selecionados, botão, loading/contador e resultados logo abaixo. Antes da primeira consulta, preservar o estado vazio de Vagas encontradas.
 - Tabela com foco no nome da empresa e título da vaga, sem informações técnicas no fluxo de pesquisa.
 - Controles com labels, foco visível, estados disabled/loading, teclado e suporte a telas pequenas.
+- Modais de cadastro/edição de empresas e cargos com altura mínima de 620px no desktop, limitada à altura disponível; no mobile, tela cheia com rolagem interna e cabeçalho fixo no modal.
 - Diagnóstico de desenvolvimento em área recolhível, separado do painel de oportunidades.
 
 ## Próxima etapa funcional
