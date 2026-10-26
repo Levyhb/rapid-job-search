@@ -27,3 +27,5 @@ Formato de intercâmbio proposto:
 ```
 
 Frontend, backend, infraestrutura e ferramentas estão preparados. O layout base do RapidJobSearch e seu CSS global foram implementados; as funcionalidades de domínio seguem as próximas etapas do roteiro.
+
+Validação de fontes: identificar plataforma e testar leitura ao cadastrar/editar uma URL; relatar compatibilidade e motivos nos logs de cada busca. Preservar os registros para um futuro modal de falhas. Não implementar ainda indicador de exclamação ou contador de erros.

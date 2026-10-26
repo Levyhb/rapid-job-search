@@ -1,15 +1,15 @@
 """Coletores de fontes públicas verificadas: InHire, Gupy e Greenhouse."""
 
-import html
 import json
 import re
 import time
 from dataclasses import asdict, dataclass
 from html.parser import HTMLParser
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import urlsplit
 
 import httpx
 
+from app.collectors.support import identify_platform
 from app.filters.role_matching import normalize_term
 
 
@@ -34,12 +34,16 @@ class CollectionReport:
     examined: int = 0
     expected: int | None = None
     reason: str = ""
+    reason_code: str = ""
+    resolved_url: str = ""
 
 
 class SourceProblem(Exception):
-    def __init__(self, message, status="falhou"):
+    def __init__(self, message, status="falhou", code="unsupported_format", resolved_url=""):
         super().__init__(message)
         self.status = status
+        self.code = code
+        self.resolved_url = resolved_url
 
 
 class TextParser(HTMLParser):
@@ -52,6 +56,8 @@ class TextParser(HTMLParser):
 
 
 def plain_text(value):
+    import html
+
     parser = TextParser()
     parser.feed(html.unescape(value or ""))
     return "\n".join(parser.parts)
@@ -105,11 +111,45 @@ def _read(client, url, **kwargs):
             response = client.get(url, **kwargs)
             if response.status_code in {401, 403, 429}:
                 raise SourceProblem(
-                    f"Acesso limitado pela fonte (HTTP {response.status_code}).", "bloqueada"
+                    f"Acesso limitado pela fonte (HTTP {response.status_code}).",
+                    "bloqueada",
+                    f"http_{response.status_code}",
+                    str(response.url),
                 )
             response.raise_for_status()
+            title = re.search(r"<title[^>]*>(.*?)</title>", response.text[:200000], re.I | re.S)
+            title_text = normalize_term(title.group(1)) if title else ""
+            challenge = (
+                response.headers.get("cf-mitigated") == "challenge"
+                or title_text
+                in {
+                    "just a moment",
+                    "access denied",
+                    "verify you are human",
+                    "attention required cloudflare",
+                }
+                or bool(
+                    re.search(
+                        r'<form[^>]+id=[\'"]challenge-form[\'"]', response.text[:200000], re.I
+                    )
+                )
+            )
+            login = bool(
+                re.search(r"/(?:login|signin|sign_in|auth)(?:/|$)", response.url.path)
+            ) and bool(
+                re.search(r'<input[^>]+type=[\'"]password[\'"]', response.text[:200000], re.I)
+            )
+            if challenge or login:
+                raise SourceProblem(
+                    "A fonte exige verificação de acesso ou login.",
+                    "bloqueada",
+                    "access_challenge" if challenge else "login_required",
+                    str(response.url),
+                )
             if len(response.content) > 10 * 1024 * 1024:
-                raise SourceProblem("Resposta excedeu o limite de 10 MB.", "parcial")
+                raise SourceProblem(
+                    "Resposta excedeu o limite de 10 MB.", "parcial", "response_limit"
+                )
             return response
         except (httpx.TimeoutException, httpx.TransportError):
             if attempt:
@@ -119,10 +159,11 @@ def _read(client, url, **kwargs):
 
 def _load(company, client, report):
     url = company["url"]
-    host = (urlsplit(url).hostname or "").lower()
-    tenant = host.split(".")[0]
-    if host.endswith(".inhire.app"):
-        report.source = "inhire"
+    report.source, tenant = identify_platform(url)
+    page = _read(client, url)
+    report.resolved_url = str(page.url)
+    report.source, tenant = identify_platform(report.resolved_url, page.text)
+    if report.source == "inhire":
         data = _read(
             client, "https://api.inhire.app/job-posts/public/pages", headers={"x-tenant": tenant}
         ).json()
@@ -131,9 +172,7 @@ def _load(company, client, report):
             raise SourceProblem("Formato público InHire não reconhecido.", "nao_suportada")
         report.expected = len(items)
         return _convert(items, company, report, tenant)
-    page = _read(client, url)
-    if host.endswith(".gupy.io"):
-        report.source = "gupy"
+    if report.source == "gupy":
         match = re.search(r'<script[^>]+id="__NEXT_DATA__"[^>]*>(.*?)</script>', page.text, re.S)
         if not match:
             raise SourceProblem(
@@ -149,20 +188,12 @@ def _load(company, client, report):
         if visible_count:
             report.expected = int(visible_count.group(1))
         return _convert(items, company, report, tenant)
-    token = None
-    if host in {"boards.greenhouse.io", "job-boards.greenhouse.io"}:
-        token = urlsplit(url).path.strip("/").split("/")[0]
-    else:
-        embedded = re.findall(
-            r'https://boards\.greenhouse\.io/embed/job_board/js\?([^"<>\s]+)', page.text
-        )
-        tokens = {parse_qs(html.unescape(value)).get("for", [""])[0] for value in embedded}
-        tokens.discard("")
-        if len(tokens) == 1:
-            token = tokens.pop()
+    token = tenant if report.source == "greenhouse" else None
     if not token or not re.fullmatch(r"[a-zA-Z0-9_-]+", token):
         raise SourceProblem(
-            "Portal ainda sem coletor validado (InHire, Gupy ou Greenhouse).", "nao_suportada"
+            "Portal sem formato público reconhecido ou com integração ambígua.",
+            "nao_suportada",
+            "unsupported_portal",
         )
     report.source = "greenhouse"
     data = _read(
@@ -179,7 +210,7 @@ def _load(company, client, report):
 
 def _convert(items, company, report, tenant):
     result = []
-    host = urlsplit(company["url"]).hostname
+    host = urlsplit(report.resolved_url or company["url"]).hostname
     for item in items:
         try:
             if report.source == "inhire":
@@ -227,6 +258,7 @@ def _convert(items, company, report, tenant):
                 raise ValueError("Título ou URL inválidos")
             result.append(job)
         except (AttributeError, ValueError, KeyError, TypeError):
+            report.reason_code = "invalid_job_data"
             report.status, report.reason = (
                 "parcial",
                 "Parte dos anúncios não pôde ser interpretada.",
@@ -248,8 +280,13 @@ def collect_company(company, on_job, on_progress=lambda report: None, client=Non
             items = _load(company, client, report)
         except SourceProblem as error:
             report.status, report.reason = error.status, str(error)
+            report.reason_code = error.code
+            report.resolved_url = error.resolved_url or report.resolved_url
             return report
-        except (httpx.HTTPError, ValueError, KeyError, TypeError) as error:
+        except (httpx.HTTPError, AttributeError, ValueError, KeyError, TypeError) as error:
+            report.reason_code = (
+                "network_error" if isinstance(error, httpx.HTTPError) else "parse_error"
+            )
             report.status, report.reason = (
                 "falhou",
                 f"Falha de leitura da fonte: {type(error).__name__}: {error}",
@@ -259,11 +296,13 @@ def collect_company(company, on_job, on_progress=lambda report: None, client=Non
         for item in items:
             if time.monotonic() - started > 180 or report.examined >= max_jobs:
                 report.status, report.reason = "parcial", "Limite de tempo ou quantidade atingido."
+                report.reason_code = "collection_limit"
                 break
             if item.identity in seen:
                 continue
             if not item.title.strip() or urlsplit(item.url).scheme not in {"http", "https"}:
                 report.status, report.reason = "parcial", "Anúncio sem título ou link válido."
+                report.reason_code = "invalid_job_data"
                 continue
             seen.add(item.identity)
             on_job(item)
@@ -277,6 +316,7 @@ def collect_company(company, on_job, on_progress=lambda report: None, client=Non
             report.status = "concluida" if report.examined == report.expected else "parcial"
             if report.status == "parcial":
                 report.reason = "Total processado difere do total informado pela fonte."
+                report.reason_code = "incomplete_coverage"
         return report
     finally:
         if owned:

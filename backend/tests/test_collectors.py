@@ -58,6 +58,8 @@ def test_missing_pages_and_limits_are_partial_not_complete():
 
 def test_inhire_public_feed_and_identity():
     def handler(request):
+        if request.url.host == "alice.inhire.app":
+            return httpx.Response(200, text="<html>Portal Alice</html>")
         assert request.headers["x-tenant"] == "alice"
         return httpx.Response(
             200,

@@ -108,8 +108,10 @@ O worker executa as tarefas reais de busca e deve permanecer ativo enquanto houv
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
 - `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas foi integrado em `develop`; a coleta está em `feature/primeiro-coletor`. O remoto GitHub será configurado posteriormente.
+Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas foi integrado em `develop`; a coleta foi integrada em `develop`; a validação de suporte está em `feature/validacao-portais`. O remoto GitHub será configurado posteriormente.
 
 Detalhes dos cargos, regras e comandos manuais: [docs/cargos-e-execucao.md](docs/cargos-e-execucao.md).
 
 Coleta real, fontes suportadas e execução com worker: [docs/coleta-portais.md](docs/coleta-portais.md).
+
+Identificação de plataformas e logs de compatibilidade: [docs/validacao-suporte-portais.md](docs/validacao-suporte-portais.md).

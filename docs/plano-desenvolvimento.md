@@ -42,7 +42,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 | 5 | Validar fontes e coletar um portal inteiro | 2, 4 | Concluída: Alice, Afya e Arco |
 | 6 | Pesquisa em segundo plano e progresso | 5 | Concluída |
 | 7 | Resultados paginados e total final | 6 | Concluída |
-| 8 | Expandir fontes e consolidar falhas | 7 | Pendente |
+| 8 | Expandir fontes e consolidar falhas | 7 | Em andamento: validação automática e logs estruturados entregues |
 | 9 | Validação integrada e primeira release | 8 | Pendente |
 
 ## Etapa 0 — ambiente local
@@ -174,3 +174,5 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 ## Próxima etapa funcional
 
 **Etapa 8: ampliar a cobertura conforme novas empresas forem priorizadas.** As etapas 5–7 foram entregues com as fontes Alice/InHire, Afya/Gupy e Arco/Greenhouse, execução RQ e resultados paginados. Evidências e limites em `docs/coleta-portais.md`.
+
+Atualização de suporte: validação assíncrona ao cadastrar/editar URL e rótulos Compatível/Precisa de adaptação/Acesso bloqueado nas respostas e logs. Rede sem confirmação fica inconclusiva. Indicador de exclamação, contagem de erros e modal serão uma melhoria futura. Detalhes em `docs/validacao-suporte-portais.md`.

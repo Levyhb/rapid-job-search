@@ -67,6 +67,12 @@ def test_snapshot_queue_worker_progress_dedup_failures_and_result(configured):
     status = client.get(f"/api/searches/{run_id}").json()
     assert status["status"] == "completed" and status["found_count"] == 1
     assert status["diagnostics"][0]["company"] == "Falha"
+    assert status["diagnostics"][0]["label"] == "Acesso bloqueado"
+    assert [item["label"] for item in status["source_validations"]] == [
+        "Acesso bloqueado",
+        "Compatível",
+    ]
+    assert all(item["url"] and item["checked_at"] for item in status["source_validations"])
     jobs = client.get(f"/api/searches/{run_id}/jobs").json()
     assert jobs["items"][0]["title"] == "Dev Backend"
     assert jobs["items"][0]["modality"] == "remote"

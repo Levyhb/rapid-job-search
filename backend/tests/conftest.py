@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -5,6 +7,7 @@ from sqlalchemy.orm import Session
 from app import models  # noqa: F401
 from app.core.database import Base, get_session
 from app.main import app
+from app.services.portal_validation import get_validation_service
 
 
 @pytest.fixture(autouse=True)
@@ -19,6 +22,8 @@ def isolated_database(tmp_path):
             yield session
 
     app.dependency_overrides[get_session] = session_override
+    app.dependency_overrides[get_validation_service] = lambda: MagicMock()
     yield
     app.dependency_overrides.pop(get_session, None)
+    app.dependency_overrides.pop(get_validation_service, None)
     engine.dispose()

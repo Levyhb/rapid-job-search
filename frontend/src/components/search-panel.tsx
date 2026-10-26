@@ -16,9 +16,9 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
   const diagnosticsSeen = useRef(new Set<string>());
 
   useEffect(() => {
-    for (const item of search?.diagnostics ?? []) {
+    for (const item of search?.source_validations ?? search?.diagnostics ?? []) {
       if (!diagnosticsSeen.current.has(item.id)) {
-        console.log(`[RapidJobSearch] ${item.company} | ${item.status}: ${item.message}`);
+        console.log(`[RapidJobSearch] [${item.label ?? item.status}] ${item.company} | ${item.url ?? ""} | ${item.platform ?? ""} | ${item.message}`, item);
         diagnosticsSeen.current.add(item.id);
       }
     }

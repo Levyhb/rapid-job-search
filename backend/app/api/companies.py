@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.database import get_session
+from app.models.portal_validation import PortalValidation
 from app.models.role import Role
 from app.models.search import SearchRun
 from app.schemas.company import Company, CompanyInput, ImportDocument
 from app.services.company_catalog import CompanyCatalog
+from app.services.portal_validation import get_validation_service
 
 router = APIRouter(prefix="/api", tags=["Empresas"])
 
@@ -22,8 +24,14 @@ def list_companies(catalog: CompanyCatalog = Depends(get_catalog)):
 
 
 @router.post("/companies", response_model=Company, status_code=201)
-def add_company(data: CompanyInput, catalog: CompanyCatalog = Depends(get_catalog)):
-    return catalog.save(data)
+def add_company(
+    data: CompanyInput,
+    catalog: CompanyCatalog = Depends(get_catalog),
+    validator=Depends(get_validation_service),
+):
+    company = catalog.save(data)
+    validator.schedule(company.model_dump())
+    return company
 
 
 @router.get("/companies/export")
@@ -43,15 +51,59 @@ def import_companies(document: ImportDocument, catalog: CompanyCatalog = Depends
 
 @router.patch("/companies/{company_id}", response_model=Company)
 def edit_company(
-    company_id: str, data: CompanyInput, catalog: CompanyCatalog = Depends(get_catalog)
+    company_id: str,
+    data: CompanyInput,
+    catalog: CompanyCatalog = Depends(get_catalog),
+    validator=Depends(get_validation_service),
 ):
-    return catalog.save(data, company_id)
+    company = catalog.save(data, company_id)
+    validator.schedule(company.model_dump())
+    return company
 
 
 @router.delete("/companies/{company_id}")
-def remove_company(company_id: str, catalog: CompanyCatalog = Depends(get_catalog)):
+def remove_company(
+    company_id: str,
+    catalog: CompanyCatalog = Depends(get_catalog),
+    validator=Depends(get_validation_service),
+):
     catalog.remove(company_id)
+    validator.remove(company_id)
     return {"removed": True}
+
+
+def find_company(catalog, company_id):
+    company = next((item for item in catalog.list() if item.id == company_id), None)
+    if not company:
+        raise HTTPException(404, "Empresa não encontrada.")
+    return company
+
+
+@router.post("/companies/{company_id}/validate", status_code=202)
+def validate_company(
+    company_id: str,
+    catalog: CompanyCatalog = Depends(get_catalog),
+    validator=Depends(get_validation_service),
+):
+    return validator.schedule(find_company(catalog, company_id).model_dump())
+
+
+@router.get("/companies/{company_id}/validation")
+def company_validation(
+    company_id: str,
+    catalog: CompanyCatalog = Depends(get_catalog),
+    session: Session = Depends(get_session),
+):
+    company = find_company(catalog, company_id)
+    record = session.get(PortalValidation, company_id)
+    if not record or record.url != company.url:
+        return {"validation_state": "not_checked", "company_id": company_id, "url": company.url}
+    return record.result or {
+        "validation_state": record.state,
+        "company_id": company_id,
+        "url": record.url,
+        "requested_at": record.requested_at,
+    }
 
 
 @router.get("/configuration/summary")

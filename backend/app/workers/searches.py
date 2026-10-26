@@ -5,6 +5,7 @@ from dataclasses import asdict
 from sqlalchemy import select
 
 from app.collectors.portals import collect_company
+from app.collectors.support import log_support, support_diagnostic
 from app.core.database import SessionLocal
 from app.filters.role_matching import match_title
 from app.models.search import SearchJob, SearchRun
@@ -60,15 +61,12 @@ def run_search(run_id, session_factory=SessionLocal, collector=collect_company):
                     session.commit()
 
                 report = collector(company, save_job, progress)
-                progress(asdict(report))
-                if report.status != "concluida":
-                    logger.warning(
-                        "Busca %s | %s | %s | %s",
-                        run_id,
-                        company["nome"],
-                        company["url"],
-                        report.reason,
-                    )
+                payload = asdict(report)
+                payload["validation"] = support_diagnostic(
+                    payload, company.get("id"), f"{run_id}:{company.get('id', company['url'])}"
+                )
+                progress(payload)
+                log_support(payload["validation"])
             run.status, run.active_key = "completed", None
             run.updated_at = time.time()
             session.commit()

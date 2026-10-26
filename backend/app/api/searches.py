@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.api.companies import get_catalog
+from app.collectors.support import support_diagnostic
 from app.core.config import get_settings
 from app.core.database import get_session
 from app.models.role import Role
@@ -45,21 +46,26 @@ def recover_run(run, session, queue):
 
 
 def run_payload(run, session):
+    validations = [
+        report.get("validation")
+        or {
+            **support_diagnostic(report, event_id=f"{run.id}:{index}"),
+            "checked_at": None,  # Execuções antigas não registravam a data por fonte.
+        }
+        for index, report in enumerate(run.reports)
+        if report["status"] != "consultando"
+    ]
     return {
         "id": run.id,
         "status": run.status,
         "found_count": session.scalar(
             select(func.count()).select_from(SearchJob).where(SearchJob.run_id == run.id)
         ),
+        "source_validations": validations,
         "diagnostics": [
-            {
-                "id": f"{run.id}:{index}",
-                "company": report["company"],
-                "message": report["reason"],
-                "status": report["status"],
-            }
-            for index, report in enumerate(run.reports)
-            if report["status"] not in {"consultando", "concluida"}
+            {**item, "status": item["collection_status"]}
+            for item in validations
+            if item["collection_status"] != "concluida"
         ],
     }
 

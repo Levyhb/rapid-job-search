@@ -37,9 +37,5 @@ async def database_error_handler(request, error: SQLAlchemyError):
     logging.getLogger(__name__).error("Falha no banco de dados", exc_info=error)
     return JSONResponse(
         status_code=503,
-        content={
-            "detail": (
-                "Banco indisponível. Inicie o PostgreSQL e execute as migrações."
-            )
-        },
+        content={"detail": ("Banco indisponível. Inicie o PostgreSQL e execute as migrações.")},
     )

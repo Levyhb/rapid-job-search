@@ -10,7 +10,15 @@ export type SearchStatus = {
   id: string;
   status: "queued" | "running" | "completed" | "interrupted" | "cancelled";
   found_count: number;
-  diagnostics?: { id: string; company: string; message: string; status: string }[];
+  diagnostics?: SourceValidation[];
+  source_validations?: SourceValidation[];
+};
+
+export type SourceValidation = {
+  id: string; company: string; message: string; status?: string;
+  url?: string; resolved_url?: string; platform?: string; checked_at?: string | null;
+  label?: string; support_status?: "compatible" | "needs_adaptation" | "access_blocked" | null;
+  collection_status?: string; code?: string; validation_state?: string;
 };
 
 export type JobsPage = {
