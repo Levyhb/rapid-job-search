@@ -8,9 +8,11 @@ Na aba Empresas e cargos, use Adicionar cargo para abrir um formulário vazio. I
 
 Cargos e variações são persistidos no PostgreSQL, tabela `roles`. A migração `20261026_01` cria a tabela. Empresas continuam no JSON do servidor, sem alteração de formato. O resumo da busca conta apenas cargos selecionados; desmarcar não remove o cadastro.
 
-O nome principal é uma alternativa aceita, junto de suas variações. O motor normaliza caixa, acentos, espaços e separadores simples, preservando limites de palavras e frases consecutivas. Não há sinônimos ou traduções ocultas.
+O nome principal é uma alternativa aceita, junto de suas variações. O motor normaliza caixa, acentos, espaços e separadores simples, preservando limites de palavras e frases consecutivas. Também reconhece as flexões Desenvolvedor, Desenvolvedora, Desenvolvedores, Desenvolvedoras, Desenvolvedor(a) e Desenvolvedor/a. Outros sinônimos e traduções continuam sendo variações explícitas.
 
-- Desenvolvedor inclui Desenvolvedor Backend, Desenvolvedor Java e Analista Desenvolvedor.
+- Desenvolvedor inclui Desenvolvedor Backend, Pessoa Desenvolvedora Backend, Desenvolvedor Java e Analista Desenvolvedor.
+- Uma variação curta como Backend inclui Backend Engineer ou Pessoa Desenvolvedora Backend. Ela é uma alternativa ao nome completo, não exige que o título também contenha Desenvolvedor.
+- Para uma busca ampla, selecionar o cargo geral Desenvolvedor. Para restringir ao Backend, desmarcar o cargo geral e manter o cargo específico com Backend como variação. Não se divide todo nome composto em palavras independentes, pois isso tornaria um filtro de Backend equivalente ao de Frontend só por ambos conterem Desenvolvedor.
 - Dev Backend só corresponde quando Dev foi registrado como nome ou variação.
 - Dev não corresponde a DevOps; Java não corresponde a JavaScript.
 - Full-Stack e Full Stack são equivalentes; Fullstack precisa constar como variação adicional.
@@ -18,6 +20,8 @@ O nome principal é uma alternativa aceita, junto de suas variações. O motor n
 - A modalidade remota é uma regra separada. O helper de modalidade exige evidência estruturada conhecida e exclui presencial, híbrido e desconhecido. Restrições de país serão preservadas pelo coletor futuro, sem inferência automática.
 
 A seção Testar título de vaga chama o backend e informa os cargos selecionados e termos que corresponderam. Ela não consulta portais e não garante modalidade remota; serve para entender a regra.
+
+As novas regras e alterações de cargos valem para novas coletas. Resultados históricos não incluem vagas que já foram descartadas; é necessário iniciar outra busca. O worker deve ser reiniciado após atualizar o código do motor de correspondência.
 
 ## Estado do produto
 

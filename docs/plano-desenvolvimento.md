@@ -12,6 +12,7 @@ Cadastrar empresas (nome e URL), configurar cargos e iniciar manualmente uma bus
 - Duas abas principais: **Busca por vagas** (resumo, botão, progresso e resultados) e **Empresas e cargos** (cadastro/importação de empresas e seleção de cargos). A busca é a aba inicial; o processamento não é interrompido ao trocar de aba.
 - Empresas persistidas em documento JSON local, com importação/exportação no mesmo formato junto do cadastro. PostgreSQL será usado para configurações de busca, execuções e vagas; não haverá dois cadastros de empresas independentes.
 - Cargos são opções alternativas: basta um termo no título. Suportar variações explícitas, incluindo fullstack/full stack/full-stack, backend/back-end e frontend/front-end.
+- Correspondência de Desenvolvedor/Desenvolvedora e flexões; termos amplos configuráveis como Backend em variações e cargo geral Desenvolvedor para alcançar títulos sem a frase completa. Manter Dev separado de DevOps, Java separado de JavaScript e a modalidade remota como critério independente.
 - Somente vagas com evidência de modalidade remota. Consultar detalhes quando a listagem for inconclusiva; não inferir remoto pela empresa. Preservar restrições territoriais.
 - Resultados finais terão Nome da empresa | Título da vaga (link) | Remoto/Híbrido. Registrar a modalidade da fonte e sua classificação normalizada para exibição e filtros futuros; manter somente remoto no filtro atual.
 - Paginação tanto na coleta dos portais quanto na tabela da aplicação.

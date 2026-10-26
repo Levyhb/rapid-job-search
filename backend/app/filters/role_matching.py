@@ -11,11 +11,18 @@ def normalize_term(value: str) -> str:
     return " ".join(value.split())
 
 
+def normalize_match_term(value: str) -> str:
+    # Flexões da mesma palavra, sem busca por prefixo que inclua DevOps em Dev.
+    value = re.sub(r"\bdesenvolvedor\s*(?:\(a\)|/a\b)", "desenvolvedor", value, flags=re.I)
+    value = normalize_term(value)
+    return re.sub(r"\bdesenvolvedor(?:a|es|as)?\b", "desenvolvedor", value)
+
+
 def match_title(title: str, name: str, variations: list[str]) -> list[str]:
-    normalized_title = f" {normalize_term(title)} "
+    normalized_title = f" {normalize_match_term(title)} "
     matched, seen = [], set()
     for term in [name, *variations]:
-        normalized = normalize_term(term)
+        normalized = normalize_match_term(term)
         if normalized and normalized not in seen and f" {normalized} " in normalized_title:
             matched.append(term)
             seen.add(normalized)

@@ -13,6 +13,11 @@ client = TestClient(app)
         ("Desenvolvedor Backend", True),
         ("Analista Desenvolvedor", True),
         ("DESENVOLVEDOR JAVA", True),
+        ("Pessoa Desenvolvedora Backend", True),
+        ("Pessoa Desenvolvedor(a) Java", True),
+        ("Desenvolvedor/a Python", True),
+        ("Desenvolvedores Java", True),
+        ("Desenvolvedoras Backend", True),
         ("Dev Frontend", True),
         ("DevOps Engineer", False),
         ("Software Developer", True),
@@ -37,6 +42,18 @@ def test_remote_is_separate_and_unknown_is_excluded():
     assert remote_matches("Remote")
     for value in [None, "Híbrido", "Presencial", "remoto ou híbrido", "onsite", "não informado"]:
         assert not remote_matches(value)
+
+
+def test_broad_variations_and_specific_roles_remain_distinct():
+    assert match_title("Pessoa Desenvolvedora Backend", "Desenvolvedor Backend", [])
+    assert match_title("Backend Engineer", "Desenvolvedor Backend", ["Backend"]) == ["Backend"]
+    assert match_title("Analista Backend Pleno", "Desenvolvedor Backend", ["Backend"])
+    assert not match_title("Pessoa Desenvolvedora Frontend", "Desenvolvedor Backend", ["Backend"])
+    assert not match_title("Backendless Developer", "Backend", [])
+    assert not match_title("DevOps Engineer", "Dev", [])
+    assert not match_title("JavaScript Developer", "Java", [])
+    assert match_title("Desenvolvedor C++", "C++", [])
+    assert not match_title("Desenvolvedor C#", "C++", [])
 
 
 def test_crud_variations_selection_and_preview():

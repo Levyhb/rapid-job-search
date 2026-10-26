@@ -38,8 +38,8 @@ def collector(company, on_job, progress):
     if company["nome"] == "Falha":
         return CollectionReport("Falha", company["url"], status="bloqueada", reason="HTTP 403")
     for identity, title, mode in [
-        ("one", "Dev Backend", "remote"),
-        ("one", "Dev Backend", "remote"),
+        ("one", "Pessoa Desenvolvedora Backend", "remote"),
+        ("one", "Pessoa Desenvolvedora Backend", "remote"),
         ("two", "Dev Java", "hybrid"),
         ("three", "DevOps", "remote"),
         ("four", "Dev Frontend", "unknown"),
@@ -74,7 +74,7 @@ def test_snapshot_queue_worker_progress_dedup_failures_and_result(configured):
     ]
     assert all(item["url"] and item["checked_at"] for item in status["source_validations"])
     jobs = client.get(f"/api/searches/{run_id}/jobs").json()
-    assert jobs["items"][0]["title"] == "Dev Backend"
+    assert jobs["items"][0]["title"] == "Pessoa Desenvolvedora Backend"
     assert jobs["items"][0]["modality"] == "remote"
     assert jobs["total"] == 1
     run_search(run_id, factory, collector)
