@@ -121,6 +121,19 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
     }
   }
 
+  function downloadJson() {
+    if (busy || !jsonText) return;
+    const objectUrl = URL.createObjectURL(new Blob([jsonText], { type: "application/json;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = "rapidjobsearch-empresas.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    setToast({ message: "Arquivo JSON preparado para salvar." });
+  }
+
   async function previewImport() {
     setError("");
     setPreview(null);
@@ -173,7 +186,26 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
 
       <div className="toast-region" role="status" aria-live="polite" aria-atomic="true">{toast && <div className="toast"><Icon name="check" /><span>{toast.message}</span><button className="icon-button" aria-label="Fechar confirmação" onClick={() => setToast(null)}><Icon name="close" /></button></div>}</div>
 
-      {dialog && <Modal variant={dialog.kind === "add" || dialog.kind === "edit" ? "form" : "default"} title={title} onClose={() => setDialog(null)} busy={busy}>
+      {dialog && <Modal
+        variant={dialog.kind === "import" || dialog.kind === "export" ? "document" : dialog.kind === "remove" ? "default" : "form"}
+        title={title}
+        onClose={() => setDialog(null)}
+        busy={busy}
+        footer={dialog.kind === "export" ? <>
+          <p className="modal-footer-note">Lista completa, pronta para compartilhar.</p>
+          <div className="modal-actions">
+            <button className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Fechar</button>
+            <button className="button button-secondary" onClick={() => void copyJson()} disabled={busy || !jsonText}><Icon name="copy" />{copied ? "JSON copiado!" : "Copiar JSON"}</button>
+            <button className="button button-primary" onClick={downloadJson} disabled={busy || !jsonText}><Icon name="download" />Salvar JSON</button>
+          </div>
+        </> : dialog.kind === "import" ? <>
+          <p className="modal-footer-note">{preview ? "Confira a revisão antes de salvar as empresas." : "Revise o conteúdo antes de importar."}</p>
+          <div className="modal-actions">
+            <button className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Cancelar</button>
+            {preview ? <button className="button button-primary" onClick={() => void importJson()} disabled={busy || !preview.empresas.length}><Icon name="check" />{busy ? "Salvando…" : `Salvar ${preview.empresas.length} ${preview.empresas.length === 1 ? "empresa" : "empresas"}`}</button> : <button className="button button-primary" onClick={() => void previewImport()} disabled={busy || !jsonText.trim()}><Icon name="upload" />{busy ? "Validando…" : "Revisar importação"}</button>}
+          </div>
+        </> : undefined}
+      >
         {(dialog.kind === "add" || dialog.kind === "edit") && <form onSubmit={save}>
           <p className="modal-description">Informe o nome e o endereço do portal de carreiras da empresa.</p>
           <div className="field"><label htmlFor="company-name">Nome da empresa</label><input data-autofocus id="company-name" placeholder="Ex.: Nome da empresa" maxLength={200} required value={name} onChange={(event) => setName(event.target.value)} disabled={busy} /></div>
@@ -182,11 +214,30 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
           <div className="modal-actions"><button type="button" className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Cancelar</button><button type="submit" className="button button-primary" disabled={busy}>{busy ? "Salvando…" : "Salvar empresa"}</button></div>
         </form>}
         {dialog.kind === "remove" && <><p className="modal-description">Remover <strong>{dialog.company.nome}</strong> da sua lista de empresas?</p><p className="modal-hint">Você poderá cadastrar a empresa novamente depois.</p>{error && <p className="form-error" role="alert">{error}</p>}<div className="modal-actions"><button className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Cancelar</button><button className="button button-danger" onClick={() => void remove()} disabled={busy}>{busy ? "Removendo…" : "Remover empresa"}</button></div></>}
-        {dialog.kind === "export" && <><p className="modal-description">Copie sua lista completa e compartilhe com outra pessoa.</p><label className="field-label" htmlFor="export-json">JSON formatado</label><textarea ref={copySource} id="export-json" className="json-editor" readOnly value={busy ? "Carregando lista…" : jsonText} spellCheck={false} />{error && <p className="form-error" role="alert">{error}</p>}<div className="modal-actions"><button className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Fechar</button><button className="button button-primary" onClick={() => void copyJson()} disabled={busy || !jsonText}><Icon name="copy" /> {copied ? "JSON copiado!" : "Copiar JSON"}</button></div></>}
-        {dialog.kind === "import" && <><p className="modal-description">Escolha um arquivo ou cole o JSON. Sua lista atual será mantida; duplicadas serão ignoradas.</p><div className="field"><label htmlFor="import-file">Arquivo JSON (até 2 MB)</label><input id="import-file" type="file" accept=".json,application/json" disabled={busy} onChange={async (event) => { const file = event.target.files?.[0]; if (!file) return; setError(""); setPreview(null); if (file.size > 2 * 1024 * 1024) { setJsonText(""); setError("O arquivo deve ter no máximo 2 MB."); return; } try { setJsonText(await file.text()); } catch { setError("Não foi possível ler o arquivo selecionado."); } }} /></div><label className="field-label" htmlFor="import-json">Conteúdo JSON</label><textarea id="import-json" className="json-editor" value={jsonText} onChange={(event) => { setJsonText(event.target.value); setPreview(null); setError(""); }} disabled={busy} maxLength={2 * 1024 * 1024} placeholder={'{\n  "versao": 1,\n  "empresas": [\n    { "nome": "Nome da empresa", "url": "https://empresa.com/carreiras" }\n  ]\n}'} spellCheck={false} />
-          {preview && <div className="import-preview"><strong>Revisão da importação</strong><p>{preview.empresas.length} para adicionar · {preview.duplicadas} duplicadas · {preview.erros.length} inválidas</p>{preview.erros.length > 0 && <ul>{preview.erros.map((item) => <li key={item.linha}>Empresa {item.linha}: {item.motivo}</li>)}</ul>}{preview.empresas.length > 0 && <ul className="import-valid-list">{preview.empresas.map((item) => <li key={`${item.nome}|${item.url}`}>{item.nome} <span>{item.url}</span></li>)}</ul>}</div>}
+        {dialog.kind === "export" && <>
+          <p className="modal-description">Salve o arquivo ou copie o JSON formatado para compartilhar sua lista completa de empresas.</p>
+          <div className="json-panel-heading"><label className="field-label" htmlFor="export-json">Prévia da exportação</label><span className="badge badge-neutral">JSON · UTF-8</span></div>
+          <textarea ref={copySource} id="export-json" className="json-editor" readOnly value={busy ? "Carregando lista…" : jsonText} spellCheck={false} aria-busy={busy} />
           {error && <p className="form-error" role="alert">{error}</p>}
-          <div className="modal-actions"><button className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Cancelar</button>{preview ? <button className="button button-primary" onClick={() => void importJson()} disabled={busy || !preview.empresas.length}>{busy ? "Importando…" : preview.erros.length ? `Importar ${preview.empresas.length} válidas` : `Importar ${preview.empresas.length} empresas`}</button> : <button className="button button-primary" onClick={() => void previewImport()} disabled={busy || !jsonText.trim()}>{busy ? "Validando…" : "Revisar importação"}</button>}</div></>}
+        </>}
+        {dialog.kind === "import" && <>
+          <p className="modal-description">Escolha um arquivo ou cole o JSON abaixo. Sua lista atual será mantida e empresas duplicadas serão ignoradas.</p>
+          <div className="field json-file-field">
+            <label htmlFor="import-file"><Icon name="upload" />Selecionar arquivo JSON</label>
+            <p id="import-file-hint">Arquivo .json de até 2 MB.</p>
+            <input data-autofocus id="import-file" type="file" accept=".json,application/json" aria-describedby="import-file-hint" disabled={busy} onChange={async (event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              setError(""); setPreview(null);
+              if (file.size > 2 * 1024 * 1024) { setJsonText(""); setError("O arquivo deve ter no máximo 2 MB."); return; }
+              try { setJsonText(await file.text()); } catch { setError("Não foi possível ler o arquivo selecionado."); }
+            }} />
+          </div>
+          <div className="json-panel-heading"><label className="field-label" htmlFor="import-json">Conteúdo JSON</label><span className="badge badge-neutral">Cole ou edite a lista</span></div>
+          <textarea id="import-json" className="json-editor" value={jsonText} onChange={(event) => { setJsonText(event.target.value); setPreview(null); setError(""); }} disabled={busy} maxLength={2 * 1024 * 1024} placeholder={'{\n  "versao": 1,\n  "empresas": [\n    { "nome": "Nome da empresa", "url": "https://empresa.com/carreiras" }\n  ]\n}'} spellCheck={false} />
+          {preview && <div className="import-preview" role="status"><strong>Revisão da importação</strong><p>{preview.empresas.length} para adicionar · {preview.duplicadas} duplicadas · {preview.erros.length} inválidas</p>{preview.erros.length > 0 && <ul>{preview.erros.map((item) => <li key={item.linha}>Empresa {item.linha}: {item.motivo}</li>)}</ul>}{preview.empresas.length > 0 && <ul className="import-valid-list">{preview.empresas.map((item) => <li key={`${item.nome}|${item.url}`}>{item.nome} <span>{item.url}</span></li>)}</ul>}</div>}
+          {error && <p className="form-error" role="alert">{error}</p>}
+        </>}
       </Modal>}
     </section>
   );

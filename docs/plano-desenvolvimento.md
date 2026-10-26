@@ -170,6 +170,7 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 - Tabela com foco no nome da empresa e título da vaga, sem informações técnicas no fluxo de pesquisa.
 - Controles com labels, foco visível, estados disabled/loading, teclado e suporte a telas pequenas.
 - Modais de cadastro/edição de empresas e cargos com altura mínima de 620px no desktop, limitada à altura disponível; no mobile, tela cheia com rolagem interna e cabeçalho fixo no modal.
+- Importação/exportação JSON em modal amplo (até 900 × 800px), tela cheia no mobile, cabeçalho e ações fixos, editor legível, revisão antes de salvar e exportação por cópia ou download do arquivo formatado.
 - Diagnóstico de desenvolvimento em área recolhível, separado do painel de oportunidades.
 
 ## Próxima etapa funcional
