@@ -2,6 +2,8 @@
 
 Na seção **Vagas encontradas**, abra **Filtros avançados**. A busca por nome considera título e empresa, ignorando caixa e acentos. Empresa e cargo são seleções únicas com busca interna; as opções vêm dos cadastros atuais por GET, com loading independente por campo e nova tentativa em caso de falha.
 
+O painel tem cabeçalho com ícone e indicador de filtros ativos, busca em destaque e três seletores alinhados no desktop. No mobile, os campos ficam em coluna. Etiquetas mostram cada filtro aplicado e permitem removê-lo individualmente pelo X; o rodapé mantém a ação de limpar todos. Os selects têm estados de foco, seleção e carregamento, busca interna e lista com rolagem.
+
 Os filtros são combinados e aplicados às vagas da execução concluída, antes da paginação. Ao alterar qualquer filtro, a página volta para 1. A contagem junto da tabela corresponde ao resultado filtrado; a contagem da pesquisa finalizada permanece como total coletado. Fechar a seção preserva a seleção. **Limpar filtros** restaura os resultados completos. Filtrar não inicia uma nova coleta.
 
 ## Níveis iniciais

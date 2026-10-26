@@ -38,14 +38,22 @@ export function AdvancedFilters({ filters, onChange, revision }: { filters: JobF
 
   function update(key: keyof JobFilters, value: string) { onChange({ ...filters, [key]: value }); }
 
+  const applied = [
+    { key: "q" as const, label: "Busca", value: filters.q.trim() },
+    { key: "company_id" as const, label: "Empresa", value: filters.company_id ? companies.find((item) => item.id === filters.company_id)?.nome ?? "Selecionada" : "" },
+    { key: "role_id" as const, label: "Cargo", value: filters.role_id ? roles.find((item) => item.id === filters.role_id)?.nome ?? "Selecionado" : "" },
+    { key: "level_id" as const, label: "Nível", value: filters.level_id ? levels.find((item) => item.id === filters.level_id)?.nome ?? "Selecionado" : "" },
+  ].filter((item) => item.value);
+
   return <div className="advanced-filters-body">
     <div className="advanced-filters-grid">
-      <div className="field"><label htmlFor="job-name-search">Busca por nome</label><div className="input-with-icon"><Icon name="search" /><input id="job-name-search" type="search" placeholder="Buscar título da vaga ou empresa" value={filters.q} maxLength={200} onChange={(event) => update("q", event.target.value)} /></div></div>
-      <SearchableSelect label="Empresa" allLabel="Todas as empresas" options={companies} value={filters.company_id} onChange={(value) => update("company_id", value)} loading={loading.companies} disabled={errors.includes("empresas")} />
-      <SearchableSelect label="Cargo" allLabel="Todos os cargos" options={roles} value={filters.role_id} onChange={(value) => update("role_id", value)} loading={loading.roles} disabled={errors.includes("cargos")} />
-      <SearchableSelect label="Nível" allLabel="Todos os níveis" options={levels} value={filters.level_id} onChange={(value) => update("level_id", value)} loading={loading.levels} disabled={errors.includes("níveis")} />
+      <div className="field filters-name-field"><label htmlFor="job-name-search">Busca por nome</label><div className="input-with-icon"><Icon name="search" /><input id="job-name-search" type="search" placeholder="Qual oportunidade você está procurando?" value={filters.q} maxLength={200} onChange={(event) => update("q", event.target.value)} /></div><p className="filters-field-hint">Busque pelo título da vaga ou nome da empresa.</p></div>
+      <SearchableSelect icon="building" label="Empresa" allLabel="Todas as empresas" options={companies} value={filters.company_id} onChange={(value) => update("company_id", value)} loading={loading.companies} disabled={errors.includes("empresas")} />
+      <SearchableSelect icon="briefcase" label="Cargo" allLabel="Todos os cargos" options={roles} value={filters.role_id} onChange={(value) => update("role_id", value)} loading={loading.roles} disabled={errors.includes("cargos")} />
+      <SearchableSelect icon="sliders" label="Nível" allLabel="Todos os níveis" options={levels} value={filters.level_id} onChange={(value) => update("level_id", value)} loading={loading.levels} disabled={errors.includes("níveis")} />
     </div>
-    <div className="advanced-filters-footnote"><p>Cargo e nível consideram o título da vaga e suas variações cadastradas.</p><button className="text-link" onClick={() => onChange({ ...emptyJobFilters })} disabled={!Object.values(filters).some(Boolean)}>Limpar filtros</button></div>
+    {!!applied.length && <div className="applied-filters" aria-label="Filtros aplicados">{applied.map((item) => <button className="applied-filter" key={item.key} title={`${item.label}: ${item.value}`} aria-label={`Remover filtro de ${item.label.toLowerCase()}`} onClick={() => update(item.key, "")}><span><strong>{item.label}:</strong> {item.value}</span><Icon name="close" /></button>)}</div>}
+    <div className="advanced-filters-footnote"><p><span className="filters-auto-dot" />Filtros aplicados automaticamente<span className="filters-footnote-detail">Cargo e nível consideram o título da vaga.</span></p><button className="filters-clear" onClick={() => onChange({ ...emptyJobFilters })} disabled={!applied.length}><Icon name="close" />Limpar filtros</button></div>
     {!!errors.length && <p className="form-error" role="alert">Não foi possível carregar: {errors.join(", ")}. <button className="text-link" onClick={() => setRetry((current) => current + 1)}>Tentar novamente</button></p>}
   </div>;
 }

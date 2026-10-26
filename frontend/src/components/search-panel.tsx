@@ -136,7 +136,11 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
       <section id="resultados" className="card results-card" aria-labelledby="results-title" aria-busy={loadingJobs}>
         <div className="results-heading"><div><span className="eyebrow">SUAS OPORTUNIDADES</span><h2 id="results-title">Vagas encontradas</h2></div><span className="badge badge-remote"><Icon name="globe" /> Remotas</span></div>
         <div className="advanced-filters">
-          <button className="advanced-filters-toggle" aria-expanded={filtersOpen} aria-controls="advanced-job-filters" onClick={() => setFiltersOpen(!filtersOpen)}><Icon name="sliders" /><span>Filtros avançados{filtersCount > 0 && <span className="filter-count">{filtersCount}</span>}</span><span aria-hidden="true">{filtersOpen ? "↑" : "↓"}</span></button>
+          <button className="advanced-filters-toggle" aria-expanded={filtersOpen} aria-controls="advanced-job-filters" onClick={() => setFiltersOpen(!filtersOpen)}>
+            <span className="filters-heading-icon"><Icon name="sliders" /></span>
+            <span className="filters-heading-copy"><span className="filters-heading-title">Filtros avançados{filtersCount > 0 && <span className="filter-count">{filtersCount} {filtersCount === 1 ? "ativo" : "ativos"}</span>}</span><span className="filters-heading-description">Encontre as oportunidades que combinam com você.</span></span>
+            <span className="filters-chevron"><Icon name="chevronDown" /></span>
+          </button>
           <div id="advanced-job-filters" hidden={!filtersOpen}>{filtersOpen && <AdvancedFilters filters={filters} onChange={changeFilters} revision={companiesRevision} />}</div>
         </div>
         {jobs && <p className="filtered-count" role="status">{jobs.total} {jobs.total === 1 ? "vaga" : "vagas"}{filtersCount ? " com os filtros aplicados" : " nesta pesquisa"}</p>}

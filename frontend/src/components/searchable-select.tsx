@@ -8,9 +8,10 @@ export type SelectOption = { id: string; nome: string };
 
 const normalize = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-export function SearchableSelect({ label, options, value, onChange, loading = false, disabled = false, allLabel }: {
+export function SearchableSelect({ label, options, value, onChange, loading = false, disabled = false, allLabel, icon }: {
   label: string; options: SelectOption[]; value: string; onChange: (value: string) => void;
   loading?: boolean; disabled?: boolean; allLabel: string;
+  icon?: "building" | "briefcase" | "sliders";
 }) {
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
@@ -40,10 +41,10 @@ export function SearchableSelect({ label, options, value, onChange, loading = fa
   }
 
   return <div className="field searchable-select" ref={root} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false); }}>
-    <label id={`${id}-label`}>{label}</label>
-    <button type="button" className="select-trigger" ref={trigger} aria-labelledby={`${id}-label ${id}-value`} aria-haspopup="listbox" aria-expanded={open} aria-controls={`${id}-list`} aria-busy={loading} disabled={loading || disabled} onClick={() => { setQuery(""); setHighlighted(0); setOpen(!open); }}>
+    <label id={`${id}-label`}>{icon && <Icon name={icon} />}{label}</label>
+    <button type="button" className={`select-trigger${value ? " has-selection" : ""}`} ref={trigger} aria-labelledby={`${id}-label ${id}-value`} aria-haspopup="listbox" aria-expanded={open} aria-controls={`${id}-list`} aria-busy={loading} disabled={loading || disabled} onClick={() => { setQuery(""); setHighlighted(0); setOpen(!open); }}>
       <span id={`${id}-value`}>{loading ? "Carregando…" : options.find((item) => item.id === value)?.nome ?? allLabel}</span>
-      {loading ? <span className="spinner" aria-hidden="true" /> : <span aria-hidden="true">⌄</span>}
+      {loading ? <span className="spinner" aria-hidden="true" /> : <Icon name="chevronDown" />}
     </button>
     {open && <div className="select-dropdown">
       <div className="select-search"><Icon name="search" /><input ref={input} role="combobox" aria-label={`Buscar ${label.toLowerCase()}`} aria-expanded="true" aria-controls={`${id}-list`} aria-autocomplete="list" aria-activedescendant={filtered[highlighted] ? `${id}-option-${highlighted}` : undefined} placeholder="Digite para buscar…" value={query} onChange={(event) => { setQuery(event.target.value); setHighlighted(0); }} onKeyDown={(event) => {

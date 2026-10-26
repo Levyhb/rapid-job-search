@@ -3,6 +3,7 @@ const paths = {
   edit: "m16 3 5 5-12 12H4v-5L16 3Zm-2 2 5 5",
   trash: "M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7",
   close: "m6 6 12 12M6 18 18 6",
+  chevronDown: "m6 9 6 6 6-6",
   copy: "M9 9h12v12H9V9ZM5 15H3V3h12v2",
   search: "m21 21-4.5-4.5M19 10.5a8.5 8.5 0 1 1-17 0 8.5 8.5 0 0 1 17 0Z",
   building: "M4 21V5a1 1 0 0 1 1-1h10v17M15 10h4a1 1 0 0 1 1 1v10M2 21h20M8 8h3M8 12h3M8 16h3",
