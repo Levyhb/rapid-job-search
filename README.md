@@ -4,9 +4,9 @@ Painel pessoal para buscar vagas remotas nos portais das empresas cadastradas.
 
 ## Estado atual
 
-Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas, importação/exportação JSON, filtros e coleta de vagas serão implementados nas próximas etapas. Os controles pendentes estão desabilitados e a prévia está identificada.
+Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos e coleta de vagas continuam pendentes; seus controles estão desabilitados.
 
-O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0 e 1 concluídas; próxima entrega funcional: cadastro de empresas com persistência JSON. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); os endpoints de domínio ainda serão implementados.
+O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–3 concluídas; próxima entrega funcional: cadastro e seleção de cargos. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
 
 ## Stack
 
@@ -108,4 +108,4 @@ O worker é a base de execução; tarefas reais de busca ainda não foram implem
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
 - `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas está em `feature/abas-busca-configuracoes`. O remoto GitHub será configurado posteriormente.
+Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas está em `feature/cadastro-empresas`. O remoto GitHub será configurado posteriormente.

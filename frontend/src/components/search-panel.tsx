@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "@/components/icon";
 import { jobLink, requestApi, type ConfigurationSummary, type JobsPage, type SearchStatus } from "@/lib/search-api";
 
-export function SearchPanel({ active, onConfigure }: { active: boolean; onConfigure: () => void }) {
+export function SearchPanel({ active, companiesRevision, onConfigure }: { active: boolean; companiesRevision: number; onConfigure: () => void }) {
   const [summary, setSummary] = useState<ConfigurationSummary | null>(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [search, setSearch] = useState<SearchStatus | null>(null);
@@ -33,7 +33,7 @@ export function SearchPanel({ active, onConfigure }: { active: boolean; onConfig
       .catch((error) => { if (!controller.signal.aborted) console.log("Configuração de pesquisa ainda indisponível", error); })
       .finally(() => { if (!controller.signal.aborted) setSummaryLoading(false); });
     return () => controller.abort();
-  }, [active]);
+  }, [active, companiesRevision]);
 
   const searchId = search?.id;
   useEffect(() => {

@@ -26,7 +26,14 @@ export async function requestApi<T>(path: string, options: RequestInit = {}): Pr
     cache: "no-store",
     signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
   });
-  if (!response.ok) throw new Error(`${options.method ?? "GET"} ${path}: HTTP ${response.status}`);
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    const detail = body?.detail;
+    const message = typeof detail === "string" ? detail : Array.isArray(detail)
+      ? detail.map((item: { loc?: string[]; msg?: string }) => `${item.loc?.at(-1) ?? "Campo"}: ${item.msg ?? "valor inválido"}`).join("; ")
+      : `Não foi possível concluir a operação (HTTP ${response.status}).`;
+    throw new Error(message);
+  }
   return response.json() as Promise<T>;
 }
 

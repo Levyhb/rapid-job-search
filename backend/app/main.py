@@ -2,9 +2,12 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from app.api.companies import router as companies_router
 from app.api.health import router
 from app.core.config import get_settings
+from app.services.company_catalog import CatalogError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 settings = get_settings()
@@ -16,3 +19,9 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 app.include_router(router)
+app.include_router(companies_router)
+
+
+@app.exception_handler(CatalogError)
+async def catalog_error_handler(request, error: CatalogError):
+    return JSONResponse(status_code=error.status_code, content={"detail": str(error)})

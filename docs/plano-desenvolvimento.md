@@ -1,6 +1,6 @@
 # RapidJobSearch — plano de desenvolvimento por etapas
 
-Atualizado em 23/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
+Atualizado em 25/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
 
 ## Objetivo da primeira versão
 
@@ -35,8 +35,8 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 |---|---|---|---|
 | 0 | Gitflow e ambiente local | — | Concluída |
 | 1 | Identidade, layout base e CSS global | 0 | Concluída |
-| 2 | Cadastro de empresas com persistência JSON | 1 | Pendente |
-| 3 | Importação/exportação de empresas | 2 | Pendente |
+| 2 | Cadastro de empresas com persistência JSON | 1 | Concluída |
+| 3 | Importação/exportação de empresas | 2 | Concluída |
 | 4 | Cargos e regras de vagas remotas | 1, 0 | Pendente |
 | 5 | Validar fontes e coletar um portal inteiro | 2, 4 | Pendente; requer amostra real de URLs |
 | 6 | Pesquisa em segundo plano e progresso | 5 | Pendente |
@@ -64,7 +64,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 ## Etapa 2 — cadastrar empresas
 
-**Branch:** `feature/empresas-json`.
+**Branch entregue:** `feature/cadastro-empresas`. Cadastro, edição, remoção, filtro, lista fixa com rolagem e toasts implementados; detalhes em `docs/cadastro-empresas.md`.
 
 **Backend:** definir schema versionado; criar serviço de leitura/escrita de `backend/data/empresas.json` (caminho configurável, arquivo real fora do Git). Gravação atômica e coordenação de escritas concorrentes para impedir perda de dados. Arquivo ausente inicia catálogo vazio; arquivo corrompido não pode ser substituído silenciosamente.
 
@@ -76,7 +76,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 
 ## Etapa 3 — importar/exportar JSON
 
-**Branch:** `feature/importacao-exportacao`.
+**Branch entregue:** `feature/cadastro-empresas`. Arquivo/texto JSON com prévia e exportação em modal com cópia formatada implementados; detalhes em `docs/cadastro-empresas.md`.
 
 **Contrato compartilhável mínimo:**
 
@@ -170,4 +170,4 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 
 ## Próxima etapa funcional
 
-**Etapa 2: implementar o cadastro de empresas com persistência JSON.** O layout desta entrega prepara os espaços; os botões de domínio permanecem indisponíveis até a integração real.
+**Etapa 4: implementar cadastro e seleção de cargos e regras de filtro remoto.** Cadastro de empresas e importação/exportação já funcionam no servidor; cargos e coletas continuam pendentes. Evidências e contrato em `docs/cadastro-empresas.md`.

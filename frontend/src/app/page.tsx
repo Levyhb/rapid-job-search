@@ -2,6 +2,7 @@
 
 import { useRef, useState, type KeyboardEvent } from "react";
 
+import { CompaniesManager } from "@/components/companies-manager";
 import { EnvironmentStatus } from "@/components/environment-status";
 import { Icon } from "@/components/icon";
 import { SearchPanel } from "@/components/search-panel";
@@ -9,6 +10,7 @@ import { SearchPanel } from "@/components/search-panel";
 type Tab = "search" | "configuration";
 
 export default function Home() {
+  const [companiesRevision, setCompaniesRevision] = useState(0);
   const [tab, setTab] = useState<Tab>("search");
   const searchTab = useRef<HTMLButtonElement>(null);
   const configurationTab = useRef<HTMLButtonElement>(null);
@@ -44,7 +46,7 @@ export default function Home() {
       </header>
 
       <main id="conteudo" className="app-main">
-        <div className="preview-notice"><span className="status-dot" /><strong>Prévia do painel</strong><span>Cadastro e coleta serão conectados nas próximas etapas.</span></div>
+        <div className="preview-notice"><span className="status-dot" /><strong>Prévia do painel</strong><span>Empresas salvas no servidor. Cadastro de cargos e coleta serão conectados nas próximas etapas.</span></div>
         <section id="search-panel" role="tabpanel" aria-labelledby="search-tab" hidden={tab !== "search"} tabIndex={0}>
           <section className="hero" aria-labelledby="hero-title">
             <div className="hero-copy">
@@ -60,21 +62,13 @@ export default function Home() {
             </div>
           </section>
           <div className="section-intro"><div><span className="eyebrow">SUA BUSCA, DO SEU JEITO</span><h2>Busca por vagas</h2></div><p>Confira sua configuração e encontre novas oportunidades.</p></div>
-          <SearchPanel active={tab === "search"} onConfigure={() => selectTab("configuration", true)} />
+          <SearchPanel companiesRevision={companiesRevision} active={tab === "search"} onConfigure={() => selectTab("configuration", true)} />
         </section>
 
         <section id="configuration-panel" role="tabpanel" aria-labelledby="configuration-tab" hidden={tab !== "configuration"} tabIndex={0}>
           <div className="configuration-intro"><span className="eyebrow">PREPARE SUA PRÓXIMA OPORTUNIDADE</span><h1>Empresas e cargos</h1><p>Defina onde você quer trabalhar e quais cargos deseja encontrar. Depois, volte à aba de busca para pesquisar.</p></div>
         <div className="configuration-grid">
-          <section id="empresas" className="card" aria-labelledby="companies-title">
-            <div className="card-heading"><span className="section-icon"><Icon name="building" /></span><div><h3 id="companies-title">Suas empresas</h3><p>Escolha onde você quer trabalhar.</p></div><span className="step-label">01</span></div>
-            <div className="field-preview" aria-describedby="companies-note">
-              <div className="form-grid"><div className="field"><label htmlFor="company-name">Nome da empresa</label><input id="company-name" placeholder="Ex.: Empresa que você acompanha" disabled /></div><div className="field"><label htmlFor="company-url">Link de carreiras</label><input id="company-url" type="url" placeholder="https://empresa.com/carreiras" disabled /></div></div>
-              <button className="button button-primary button-full" disabled><Icon name="plus" /> Adicionar empresa</button>
-            </div>
-            <div className="import-actions"><span>Compartilhe sua lista em JSON</span><div><button className="button button-secondary button-small" disabled><Icon name="upload" /> Importar</button><button className="button button-secondary button-small" disabled><Icon name="download" /> Exportar</button></div></div>
-            <p className="implementation-note" id="companies-note">Cadastro e arquivos JSON serão conectados nas etapas 2 e 3.</p>
-          </section>
+          <CompaniesManager onChanged={() => setCompaniesRevision((revision) => revision + 1)} />
 
           <section id="cargos" className="card" aria-labelledby="roles-title">
             <div className="card-heading"><span className="section-icon"><Icon name="sliders" /></span><div><h3 id="roles-title">Cargos de interesse</h3><p>Escolha os cargos que você deseja encontrar.</p></div><span className="step-label">02</span></div>

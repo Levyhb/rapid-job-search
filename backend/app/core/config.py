@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "Busca Vagas API"
+    companies_file: Path = Path(__file__).resolve().parents[2] / "data" / "empresas.json"
     database_url: str = "postgresql+psycopg://busca_vagas:local_dev@localhost:55432/busca_vagas"
     redis_url: str = "redis://localhost:6379/0"
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
