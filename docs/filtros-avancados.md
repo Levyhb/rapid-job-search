@@ -2,7 +2,7 @@
 
 Na seção **Vagas encontradas**, abra **Filtros avançados**. A busca por nome considera título e empresa, ignorando caixa e acentos. Empresa e cargo são seleções únicas com busca interna; as opções vêm dos cadastros atuais por GET, com loading independente por campo e nova tentativa em caso de falha.
 
-O cabeçalho usa flex com espaço entre título/ícone à esquerda e descrição à direita. No desktop, busca por nome e empresa ficam lado a lado, seguidos por cargo e nível na segunda linha; no mobile, os campos ficam em coluna. Labels mostram apenas o nome, sem ícones ou texto auxiliar abaixo da busca. O rodapé apresenta somente o botão Limpar filtros, sem etiquetas ou contador de filtros ativos. Os selects mantêm estados de foco, seleção e carregamento, busca interna e lista com rolagem.
+O cabeçalho usa flex com título/ícone à esquerda e apenas uma seta à direita: para baixo quando fechado e para cima quando aberto. No desktop, busca por nome e empresa ficam lado a lado, seguidos por cargo e nível na segunda linha; no mobile, os campos ficam em coluna. Labels mostram apenas o nome, sem ícones ou texto auxiliar abaixo da busca. O rodapé apresenta somente o botão Limpar filtros, sem etiquetas ou contador de filtros ativos. Os selects mantêm estados de foco, seleção e carregamento, busca interna e lista com rolagem.
 
 Os filtros são combinados e aplicados às vagas da execução concluída, antes da paginação. Ao alterar qualquer filtro, a página volta para 1. A contagem junto da tabela corresponde ao resultado filtrado; a contagem da pesquisa finalizada permanece como total coletado. Fechar a seção preserva a seleção. **Limpar filtros** restaura os resultados completos. Filtrar não inicia uma nova coleta.
 
