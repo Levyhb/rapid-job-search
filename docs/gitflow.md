@@ -30,3 +30,7 @@ Exemplos de separação: setup, empresas, cargos, vagas, busca e validação de 
 | `7ed3a43` | Atalho `py run` para iniciar o backend |
 
 Na entrega `94d449a`, coleta, vagas e busca foram implementadas como um fluxo completo em um único commit. Nas próximas entregas, separar essas frentes em commits próprios quando constituírem funcionalidades independentes. O histórico existente permanece preservado.
+
+## Publicação no GitHub
+
+Configuração do remoto, primeiro envio das branches e proteção por CI: [publicacao-github.md](publicacao-github.md). Funcionalidades concluídas são integradas em `develop`; a publicação inicial não antecipa uma release nem altera o estado estável de `main`.

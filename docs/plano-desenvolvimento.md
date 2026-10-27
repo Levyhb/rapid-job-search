@@ -1,6 +1,6 @@
 # RapidJobSearch — plano de desenvolvimento por etapas
 
-Atualizado em 26/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
+Atualizado em 27/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
 
 ## Objetivo da primeira versão
 
@@ -184,3 +184,11 @@ Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. 
 Inspeção das 18 fontes que falharam concluída em 26/10/2026, incluindo a URL atualizada da Meta/Insi. Foram identificados caminhos de adaptação para 17 e bloqueio na rota pública do Escavador. Descoberta de Greenhouse/Gupy em sites próprios, novos parsers e APIs paginadas ainda serão implementados; evidências e prioridades em `docs/inspecao-portais-2026-10-26.md`.
 
 Atualização de suporte: validação assíncrona ao cadastrar/editar URL e rótulos Compatível/Precisa de adaptação/Acesso bloqueado nas respostas e logs. Rede sem confirmação fica inconclusiva. Indicador de exclamação, contagem de erros e modal serão uma melhoria futura. Detalhes em `docs/validacao-suporte-portais.md`.
+
+## Preparação para publicação no GitHub — 27/10/2026
+
+Entregue na branch `feature/preparacao-github`: revisão do README e da execução local, exclusões adicionais de bancos/chaves/artefatos, reforço do contexto Docker, workflow de CI (Ruff, pytest, migrações em PostgreSQL vazio, ESLint, TypeScript, build e Compose), modelo de PR e [guia de publicação](publicacao-github.md). O catálogo pessoal e os arquivos de ambiente permanecem locais.
+
+O remoto e o primeiro push dependem da URL do repositório do usuário. A execução do workflow no GitHub e a primeira release continuam pendentes; esta preparação não conclui a validação integrada da etapa 9.
+
+Validação desta entrega: 52 testes passaram; Ruff, ESLint, geração de tipos do Next.js, TypeScript, build e Compose com perfil worker aprovados. Migrações chegaram a `20261026_03` em banco PostgreSQL temporário vazio, removido após o teste sem alterar o banco da aplicação. Revisão dos nomes de arquivos em todos os commits e busca por padrões comuns de tokens/chaves privadas não encontraram ocorrências; essa busca não equivale a uma auditoria completa de segurança.

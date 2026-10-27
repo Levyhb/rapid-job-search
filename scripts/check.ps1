@@ -15,6 +15,7 @@ try {
 Push-Location frontend
 try {
     Invoke-Checked { npm.cmd run lint }
+    Invoke-Checked { npx.cmd next typegen }
     Invoke-Checked { npx.cmd tsc --noEmit }
     Invoke-Checked { npm.cmd run build }
 } finally { Pop-Location }

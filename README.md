@@ -4,9 +4,13 @@ Painel pessoal para buscar vagas remotas nos portais das empresas cadastradas.
 
 ## Estado atual
 
-Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos, seleção, variações e prévia de títulos também funcionam, com persistência no PostgreSQL. A coleta real de Alice, Afya e Arco está integrada ao botão de busca, com processamento em segundo plano, contagem e resultados remotos persistidos.
+Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos, seleção, variações e prévia de títulos também funcionam, com persistência no PostgreSQL. A coleta de portais Gupy, InHire e Greenhouse está integrada ao botão de busca, com processamento em segundo plano, contagem e resultados remotos persistidos. Os resultados têm filtros avançados por texto, empresa, cargo e nível. Sites próprios e outras plataformas podem precisar de adaptação; não há suporte universal a qualquer URL.
 
 O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–7 concluídas; próxima entrega: ampliar cobertura e consolidar a primeira release. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
+
+## Publicação no GitHub
+
+O repositório inclui CI para lint, testes, migrações, TypeScript, build e validação do Docker Compose. Consulte o [passo a passo de publicação](docs/publicacao-github.md) para configurar o remoto e enviar `main` e `develop`. Os arquivos `.env` e dados pessoais locais não são versionados. A publicação do código é independente de hospedar a aplicação.
 
 ## Stack
 
@@ -32,7 +36,7 @@ Na raiz do projeto:
 powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
 ```
 
-O setup cria os arquivos locais de configuração se não existirem, instala dependências, prepara Chromium, inicia PostgreSQL/Redis e executa migrações. Não é necessário ativar o ambiente virtual. O Alembic aplica a migração da tabela de cargos; as tabelas de execução e vagas entram nas próximas etapas.
+O setup cria os arquivos locais de configuração se não existirem, instala dependências, prepara Chromium, inicia PostgreSQL/Redis e executa migrações. Não é necessário ativar o ambiente virtual. O Alembic aplica as migrações de cargos, execuções de busca, vagas e validação dos portais. Uma instalação nova começa sem o catálogo pessoal de empresas, cargos e resultados.
 
 ## Executar
 
@@ -44,7 +48,7 @@ py run
 ```
 
 Também funciona com `py run.py`. A API abre em `http://127.0.0.1:8000`; `Ctrl+C` encerra.
-Para outra porta: `py run --port 8001`. PostgreSQL precisa estar iniciado.
+Para outra porta: `py run --port 8001`. PostgreSQL e Redis precisam estar iniciados. O worker deve rodar em outro terminal para processar buscas e validações de portais.
 
 Com Docker Desktop aberto, execute `.\scripts\dev.ps1 infra`. Depois use terminais separados na raiz do projeto:
 
@@ -55,7 +59,7 @@ Com Docker Desktop aberto, execute `.\scripts\dev.ps1 infra`. Depois use termina
 # Terminal 2: frontend com recarregamento automático
 .\scripts\dev.ps1 frontend
 
-# Terminal 3, quando necessário: worker Linux
+# Terminal 3: worker Linux (necessário para as buscas e validações de portais)
 .\scripts\dev.ps1 worker
 ```
 
@@ -69,6 +73,13 @@ Se a política local impedir os scripts, use `powershell -ExecutionPolicy Bypass
 - Redis: `127.0.0.1:6379`.
 
 A porta 55432 evita conflito com o PostgreSQL já existente na máquina. As credenciais de desenvolvimento estão no Compose e no `.env.example` e servem apenas ao ambiente local. Os serviços são publicados somente na interface de loopback.
+
+## Primeira busca
+
+1. Abra a aba **Empresas e cargos** e cadastre empresas ou importe um JSON. Para começar, use [docs/empresas-primeira-coleta.json](docs/empresas-primeira-coleta.json); [docs/empresas-modelo.json](docs/empresas-modelo.json) demonstra o formato.
+2. Cadastre e selecione os cargos e suas variações. A correspondência usa o título da vaga e o filtro atual inclui apenas vagas remotas confirmadas.
+3. Com API, frontend, PostgreSQL, Redis e worker ativos, abra **Busca por vagas** e inicie a pesquisa.
+4. Acompanhe o contador e consulte os resultados paginados e filtros avançados. Falhas de portais são registradas nos logs e no console do navegador.
 
 ## Configuração
 
@@ -111,14 +122,14 @@ O worker executa as tarefas reais de busca e deve permanecer ativo enquanto houv
 - `frontend/src/app`: interface.
 - `backend/app/api`: endpoints.
 - `backend/app/core`: configuração e banco.
-- `backend/app/collectors`, `filters`, `services`, `workers`: bases para as próximas funcionalidades.
+- `backend/app/collectors`, `filters`, `services`, `workers`: coleta, correspondência de cargos, persistência e processamento em segundo plano.
 - `backend/migrations`: migrações.
 - `scripts`: setup, execução e verificações.
 - `docs/gitflow.md`: convenções de branches.
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
 - `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas. O setup e o layout base foram integrados em `develop`; a divisão em abas foi integrada em `develop`; o cadastro de empresas foi integrado em `develop`; a coleta foi integrada em `develop`; a validação de suporte está em `feature/validacao-portais`. O remoto GitHub será configurado posteriormente.
+Branches `main` e `develop` preparadas; as funcionalidades concluídas estão integradas em `develop`. `main` representa o estado estável já existente. O remoto GitHub ainda precisa ser configurado. Consulte [docs/gitflow.md](docs/gitflow.md) e [docs/publicacao-github.md](docs/publicacao-github.md).
 
 Detalhes dos cargos, regras e comandos manuais: [docs/cargos-e-execucao.md](docs/cargos-e-execucao.md).
 
