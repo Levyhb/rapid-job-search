@@ -8,10 +8,9 @@ export type SelectOption = { id: string; nome: string };
 
 const normalize = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-export function SearchableSelect({ label, options, value, onChange, loading = false, disabled = false, allLabel, icon }: {
+export function SearchableSelect({ label, options, value, onChange, loading = false, disabled = false, allLabel }: {
   label: string; options: SelectOption[]; value: string; onChange: (value: string) => void;
   loading?: boolean; disabled?: boolean; allLabel: string;
-  icon?: "building" | "briefcase" | "sliders";
 }) {
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
@@ -41,7 +40,7 @@ export function SearchableSelect({ label, options, value, onChange, loading = fa
   }
 
   return <div className="field searchable-select" ref={root} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false); }}>
-    <label id={`${id}-label`}>{icon && <Icon name={icon} />}{label}</label>
+    <label id={`${id}-label`}>{label}</label>
     <button type="button" className={`select-trigger${value ? " has-selection" : ""}`} ref={trigger} aria-labelledby={`${id}-label ${id}-value`} aria-haspopup="listbox" aria-expanded={open} aria-controls={`${id}-list`} aria-busy={loading} disabled={loading || disabled} onClick={() => { setQuery(""); setHighlighted(0); setOpen(!open); }}>
       <span id={`${id}-value`}>{loading ? "Carregando…" : options.find((item) => item.id === value)?.nome ?? allLabel}</span>
       {loading ? <span className="spinner" aria-hidden="true" /> : <Icon name="chevronDown" />}

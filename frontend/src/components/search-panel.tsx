@@ -137,9 +137,8 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
         <div className="results-heading"><div><span className="eyebrow">SUAS OPORTUNIDADES</span><h2 id="results-title">Vagas encontradas</h2></div><span className="badge badge-remote"><Icon name="globe" /> Remotas</span></div>
         <div className="advanced-filters">
           <button className="advanced-filters-toggle" aria-expanded={filtersOpen} aria-controls="advanced-job-filters" onClick={() => setFiltersOpen(!filtersOpen)}>
-            <span className="filters-heading-icon"><Icon name="sliders" /></span>
-            <span className="filters-heading-copy"><span className="filters-heading-title">Filtros avançados{filtersCount > 0 && <span className="filter-count">{filtersCount} {filtersCount === 1 ? "ativo" : "ativos"}</span>}</span><span className="filters-heading-description">Encontre as oportunidades que combinam com você.</span></span>
-            <span className="filters-chevron"><Icon name="chevronDown" /></span>
+            <span className="filters-heading-title"><span className="filters-heading-icon"><Icon name="sliders" /></span>Filtros avançados</span>
+            <span className="filters-heading-aside"><span className="filters-heading-description">Encontre as oportunidades que combinam com você.</span><span className="filters-chevron"><Icon name="chevronDown" /></span></span>
           </button>
           <div id="advanced-job-filters" hidden={!filtersOpen}>{filtersOpen && <AdvancedFilters filters={filters} onChange={changeFilters} revision={companiesRevision} />}</div>
         </div>
