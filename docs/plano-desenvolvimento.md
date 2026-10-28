@@ -189,6 +189,6 @@ Atualização de suporte: validação assíncrona ao cadastrar/editar URL e rót
 
 Entregue na branch `feature/preparacao-github`: revisão do README e da execução local, exclusões adicionais de bancos/chaves/artefatos, reforço do contexto Docker, workflow de CI (Ruff, pytest, migrações em PostgreSQL vazio, ESLint, TypeScript, build e Compose), modelo de PR e [guia de publicação](publicacao-github.md). O catálogo pessoal e os arquivos de ambiente permanecem locais.
 
-O remoto e o primeiro push dependem da URL do repositório do usuário. A execução do workflow no GitHub e a primeira release continuam pendentes; esta preparação não conclui a validação integrada da etapa 9.
+Remoto `origin` configurado em 27/10/2026 para `https://github.com/Levyhb/rapid-job-search.git`; primeiro envio de `main` e `develop` concluído, com acompanhamento das branches remotas. A execução do workflow no GitHub e a primeira release continuam pendentes; esta preparação não conclui a validação integrada da etapa 9.
 
 Validação desta entrega: 52 testes passaram; Ruff, ESLint, geração de tipos do Next.js, TypeScript, build e Compose com perfil worker aprovados. Migrações chegaram a `20261026_03` em banco PostgreSQL temporário vazio, removido após o teste sem alterar o banco da aplicação. Revisão dos nomes de arquivos em todos os commits e busca por padrões comuns de tokens/chaves privadas não encontraram ocorrências; essa busca não equivale a uma auditoria completa de segurança.

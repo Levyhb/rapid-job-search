@@ -129,7 +129,7 @@ O worker executa as tarefas reais de busca e deve permanecer ativo enquanto houv
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
 - `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas; as funcionalidades concluídas estão integradas em `develop`. `main` representa o estado estável já existente. O remoto GitHub ainda precisa ser configurado. Consulte [docs/gitflow.md](docs/gitflow.md) e [docs/publicacao-github.md](docs/publicacao-github.md).
+Branches `main` e `develop` preparadas; as funcionalidades concluídas estão integradas em `develop`. `main` representa o estado estável já existente. O remoto `origin` está configurado para [Levyhb/rapid-job-search](https://github.com/Levyhb/rapid-job-search), com `main` e `develop` publicadas. Consulte [docs/gitflow.md](docs/gitflow.md) e [docs/publicacao-github.md](docs/publicacao-github.md).
 
 Detalhes dos cargos, regras e comandos manuais: [docs/cargos-e-execucao.md](docs/cargos-e-execucao.md).
 

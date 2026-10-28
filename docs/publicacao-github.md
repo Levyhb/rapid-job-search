@@ -1,6 +1,6 @@
 # Preparar e publicar no GitHub
 
-O projeto tem Git local e branches `main` e `develop`. A preparação inclui CI, documentação e exclusão dos dados locais. Ainda não existe remoto configurado; nenhum conteúdo foi enviado ao GitHub.
+O projeto tem Git local e branches `main` e `develop`. A preparação inclui CI, documentação e exclusão dos dados locais. Remoto `origin` configurado para [Levyhb/rapid-job-search](https://github.com/Levyhb/rapid-job-search). As branches `main` e `develop` foram publicadas em 27/10/2026, preservando o histórico local.
 
 ## O que será compartilhado
 
