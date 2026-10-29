@@ -13,4 +13,21 @@ __pycache__/
 coverage/
 htmlcov/
 work/
+backend/data/
 *.log
+
+# Artefatos locais, bancos e chaves privadas
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.tsbuildinfo
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.dump
+*.pem
+*.key

@@ -1,0 +1,5 @@
+"""Atalho para executar com py run."""
+
+from run import main
+
+raise SystemExit(main())
