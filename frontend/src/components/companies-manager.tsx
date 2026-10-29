@@ -228,11 +228,14 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
       <div className="toast-region" role="status" aria-live="polite" aria-atomic="true">{toast && <div className="toast"><Icon name="check" /><span>{toast.message}</span><button className="icon-button" aria-label="Fechar confirmação" onClick={() => setToast(null)}><Icon name="close" /></button></div>}</div>
 
       {dialog && <Modal
-        variant={dialog.kind === "add" ? "batch" : dialog.kind === "import" || dialog.kind === "export" ? "document" : dialog.kind === "remove" ? "default" : "form"}
+        variant={dialog.kind === "add" ? "batch" : dialog.kind === "import" || dialog.kind === "export" ? "document" : dialog.kind === "remove" ? "confirmation" : "form"}
         title={title}
         onClose={() => setDialog(null)}
         busy={busy}
-        footer={dialog.kind === "add" ? <div className="batch-footer">
+        footer={dialog.kind === "remove" ? <div className="modal-actions">
+          <button type="button" data-autofocus className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Cancelar</button>
+          <button type="button" className="button button-danger" onClick={() => void remove()} disabled={busy}>{busy ? "Removendo…" : "Remover empresa"}</button>
+        </div> : dialog.kind === "add" ? <div className="batch-footer">
           <p className="modal-footer-note" role="status">{pendingCompanies.length} {pendingCompanies.length === 1 ? "empresa para adicionar" : "empresas para adicionar"}</p>
           <button className="button button-primary" onClick={() => void saveBatch()} disabled={busy || !pendingCompanies.length}><Icon name="check" />{busy ? "Salvando…" : "Salvar"}</button>
         </div> : dialog.kind === "export" ? <>
@@ -273,7 +276,11 @@ export function CompaniesManager({ onChanged }: { onChanged: () => void }) {
           {error && <p className="form-error" role="alert">{error}</p>}
           <div className="modal-actions"><button type="button" className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Cancelar</button><button type="submit" className="button button-primary" disabled={busy}>{busy ? "Salvando…" : "Salvar empresa"}</button></div>
         </form>}
-        {dialog.kind === "remove" && <><p className="modal-description">Remover <strong>{dialog.company.nome}</strong> da sua lista de empresas?</p><p className="modal-hint">Você poderá cadastrar a empresa novamente depois.</p>{error && <p className="form-error" role="alert">{error}</p>}<div className="modal-actions"><button className="button button-secondary" onClick={() => setDialog(null)} disabled={busy}>Cancelar</button><button className="button button-danger" onClick={() => void remove()} disabled={busy}>{busy ? "Removendo…" : "Remover empresa"}</button></div></>}
+        {dialog.kind === "remove" && <>
+          <p className="modal-description">Ao remover <strong>{dialog.company.nome}</strong>, a empresa não será mais consultada e suas vagas deixarão de aparecer nas próximas buscas.</p>
+          <p className="modal-hint">Os resultados das pesquisas já realizadas serão mantidos. Você poderá cadastrar a empresa novamente depois.</p>
+          {error && <p className="form-error" role="alert">{error}</p>}
+        </>}
         {dialog.kind === "export" && <>
           <p className="modal-description">Salve o arquivo ou copie o JSON formatado para compartilhar sua lista completa de empresas.</p>
           <div className="json-panel-heading"><label className="field-label" htmlFor="export-json">Prévia da exportação</label><span className="badge badge-neutral">JSON · UTF-8</span></div>

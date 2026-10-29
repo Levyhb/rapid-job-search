@@ -168,6 +168,10 @@ h1, h2, h3, p { margin: 0; }
 .modal[open] { display: flex; flex-direction: column; }
 .modal-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 28px 28px; }
 .modal-form { min-height: min(620px, calc(100dvh - 48px)); }
+.modal-confirmation { width: min(560px, calc(100vw - 48px)); height: min(340px, calc(100dvh - 48px)); }
+.modal-confirmation .modal-heading { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.modal-confirmation .modal-content { flex: 1; }
+.modal-confirmation .modal-description { margin-bottom: 16px; font-size: 14px; }
 .modal-form .modal-content { display: flex; flex-direction: column; flex: 1; }
 .modal-form .modal-content > form { display: flex; flex-direction: column; flex: 1; }
 .modal-form form > * { flex-shrink: 0; }

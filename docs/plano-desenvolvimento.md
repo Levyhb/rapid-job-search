@@ -1,6 +1,6 @@
 # RapidJobSearch — plano de desenvolvimento por etapas
 
-Atualizado em 28/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
+Atualizado em 29/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
 
 ## Objetivo da primeira versão
 
@@ -210,3 +210,9 @@ O modal reutiliza os diagnósticos persistidos da execução, com empresa, link 
 Verificado: 52 testes backend, Ruff, ESLint, TypeScript e build aprovados. Navegador Chromium com respostas controladas confirmou cards 50/50, lista de 16 empresas, rolagem interna sem mover o header, único botão de fechar, Escape/retorno de foco, mobile 390px sem overflow, singular/plural, falhas com zero vagas, ausência de aviso sem falhas ou durante a busca e ausência de erros JavaScript.
 
 Ajuste visual solicitado: informativo de falhas com fundo amarelo suave e texto/ícone em âmbar, sem borda externa, mantendo espaçamento, tipografia e cantos do resumo final. Botão Saber mais acompanha a paleta amarela; ícone de exclamação preservado.
+
+## Modal de remoção de empresa — 29/10/2026
+
+Branch `feature/modal-remover-empresa`. Modal padrão de confirmação com título Remover empresa, X no cabeçalho, tamanho desktop 560 × 340px limitado ao viewport, corpo rolável e ações fixas no rodapé. No mobile permanece em tela cheia. A descrição explica que a empresa e suas vagas saem das próximas buscas; resultados históricos permanecem. Cancelar recebe foco inicial; confirmar mantém loading, tratamento de erro e toast existentes. Nenhuma alteração no comportamento do backend ou nos dados históricos.
+
+Verificações: ESLint, geração de tipos, TypeScript e build aprovados. Chromium com API simulada confirmou dimensões 560 × 340px, descrição visível, foco em Cancelar, cancelamento sem requisição DELETE, erro mantendo o modal aberto, confirmação removendo a linha e mostrando toast, mobile fullscreen sem overflow e fechamento por Escape. Nenhuma empresa real foi removida.

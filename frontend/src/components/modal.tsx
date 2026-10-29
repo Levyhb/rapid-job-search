@@ -5,7 +5,7 @@ import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Icon } from "@/components/icon";
 
 export function Modal({ title, children, footer, onClose, busy = false, variant = "default" }: {
-  title: string; children: ReactNode; footer?: ReactNode; onClose: () => void; busy?: boolean; variant?: "default" | "form" | "document" | "batch" | "diagnostics";
+  title: string; children: ReactNode; footer?: ReactNode; onClose: () => void; busy?: boolean; variant?: "default" | "form" | "document" | "batch" | "diagnostics" | "confirmation";
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
