@@ -1,5 +1,9 @@
 # Histórico de alterações
 
+## Não lançado
+
+- Aviso de sites com falha ao concluir a busca, ao lado do total de vagas, com modal de empresas, URLs e motivos; layout responsivo e rolagem interna.
+
 ## 1.0.0 — 28/10/2026
 
 Primeira versão do RapidJobSearch publicada em `main`.

@@ -15,6 +15,7 @@ const paths = {
   upload: "M12 16V4m-4 4 4-4 4 4M4 16v5h16v-5",
   briefcase: "M8 7V4h8v3M3 7h18v14H3V7Zm0 6a22 22 0 0 0 18 0M10 13h4v3h-4v-3Z",
   check: "m5 12 4 4L19 6",
+  warning: "M12 3 2 21h20L12 3ZM12 9v5M12 17h.01",
 };
 
 export function Icon({ name, className = "" }: { name: keyof typeof paths; className?: string }) {

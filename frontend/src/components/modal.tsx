@@ -5,15 +5,16 @@ import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Icon } from "@/components/icon";
 
 export function Modal({ title, children, footer, onClose, busy = false, variant = "default" }: {
-  title: string; children: ReactNode; footer?: ReactNode; onClose: () => void; busy?: boolean; variant?: "default" | "form" | "document" | "batch";
+  title: string; children: ReactNode; footer?: ReactNode; onClose: () => void; busy?: boolean; variant?: "default" | "form" | "document" | "batch" | "diagnostics";
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   useEffect(() => {
     const element = dialog.current;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     element?.showModal();
     element?.querySelector<HTMLElement>("[data-autofocus]")?.focus();
-    return () => element?.close();
+    return () => { element?.close(); previousFocus?.focus({ preventScroll: true }); };
   }, []);
 
   return (
