@@ -13,6 +13,8 @@
   --success-soft: #eaf7f0;
   --danger: #a5283c;
   --danger-soft: #fff1f2;
+  --warning: #896514;
+  --warning-soft: #fff7db;
   --radius: 16px;
   --shadow: 0 4px 20px rgb(30 36 70 / 3%);
   --font-ui: Arial, Helvetica, sans-serif;
@@ -71,10 +73,10 @@ h1, h2, h3, p { margin: 0; }
 .search-completion { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin: -12px 0 24px; }
 .search-completion-with-failures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .search-completion .completion-message { margin: 0; min-width: 0; }
-.search-failure-message { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 16px 20px; border: 1px solid #f4cbd2; border-radius: 10px; background: var(--danger-soft); color: var(--danger); font-size: 13px; }
+.search-failure-message { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 16px 20px; border-radius: 10px; background: var(--warning-soft); color: var(--warning); font-size: 13px; }
 .search-failure-message p { flex: 1; min-width: 0; }
-.search-failure-details { flex-shrink: 0; border: 1px solid #e5acb6; border-radius: 7px; padding: 7px 10px; background: white; color: var(--danger); font-size: 12px; font-weight: 600; }
-.search-failure-details:hover { background: #ffe1e6; }
+.search-failure-details { flex-shrink: 0; border: 1px solid #e5d397; border-radius: 7px; padding: 7px 10px; background: white; color: var(--warning); font-size: 12px; font-weight: 600; }
+.search-failure-details:hover { background: #f8edc5; }
 .spinner { display: inline-block; width: 18px; height: 18px; flex-shrink: 0; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 800ms linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .jobs-table .job-cell { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 12px; }
