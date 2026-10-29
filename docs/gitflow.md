@@ -6,7 +6,7 @@
 - release/*: sair de develop; integrar em main e develop; criar tag.
 - hotfix/*: sair de main e integrar em main e develop.
 
-Use commits pequenos e descritivos. O remoto GitHub será configurado posteriormente.
+Use commits pequenos e descritivos. Remoto `origin`: `https://github.com/Levyhb/rapid-job-search.git`.
 
 ## Política de commits — solicitação do usuário em 26/10/2026
 
@@ -34,3 +34,7 @@ Na entrega `94d449a`, coleta, vagas e busca foram implementadas como um fluxo co
 ## Publicação no GitHub
 
 Configuração do remoto, primeiro envio das branches e proteção por CI: [publicacao-github.md](publicacao-github.md). Funcionalidades concluídas são integradas em `develop`; a publicação inicial não antecipa uma release nem altera o estado estável de `main`.
+
+## Release 1.0.0
+
+A primeira release é `1.0.0`, preparada em `release/1.0.0` a partir de `develop`. Após os checks, integrar a release em `main`, criar a tag anotada `v1.0.0` e sincronizar `develop` com `main`, preservando o histórico. Novas funcionalidades saem de `develop` em `feature/*`; correções urgentes da versão publicada saem de `main` em `hotfix/*`.

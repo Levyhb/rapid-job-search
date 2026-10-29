@@ -1,6 +1,6 @@
 # RapidJobSearch — plano de desenvolvimento por etapas
 
-Atualizado em 27/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
+Atualizado em 28/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
 
 ## Objetivo da primeira versão
 
@@ -44,7 +44,7 @@ Não avançar declarando uma etapa pronta se os critérios não foram atendidos.
 | 6 | Pesquisa em segundo plano e progresso | 5 | Concluída |
 | 7 | Resultados paginados e total final | 6 | Concluída |
 | 8 | Expandir fontes e consolidar falhas | 7 | Em andamento: validação automática e logs estruturados entregues |
-| 9 | Validação integrada e primeira release | 8 | Pendente |
+| 9 | Validação integrada e primeira release | 8 | Release 1.0.0 consolidada; validação manual completa permanece pendente |
 
 ## Etapa 0 — ambiente local
 
@@ -155,13 +155,13 @@ Melhoria entregue: modal **Adicionar empresa** com lista temporária, inclusão 
 
 ## Etapa 9 — primeira versão utilizável
 
-**Branch:** `release/0.1.0` após integrar as features em `develop`.
+**Branch:** `release/1.0.0` após integrar as features em `develop`.
 
 **Entregáveis:** instruções locais atualizadas, dados JSON de exemplo claramente identificados, matriz de suporte, checks automatizados e documentação de limitações. Quando o GitHub estiver configurado, adicionar CI para lint/testes/build.
 
 **Aceite integrado:** importar empresas reais, definir termos, buscar, acompanhar a contagem e abrir uma vaga remota da tabela. Reiniciar sem perder cadastro/configuração/resultados. Testar duplicatas, paginação, JSON inválido, falha isolada, todos os portais falhando, interrupção e viewport móvel.
 
-Após validação, integrar release em `main` e `develop` e criar tag `v0.1.0`. Publicar no GitHub quando solicitado/configurado.
+Após validação, integrar release em `main` e `develop` e criar tag `v1.0.0`. Publicar no GitHub quando solicitado/configurado.
 
 ## Direção de layout
 
@@ -192,3 +192,11 @@ Entregue na branch `feature/preparacao-github`: revisão do README e da execuç�
 Remoto `origin` configurado em 27/10/2026 para `https://github.com/Levyhb/rapid-job-search.git`; primeiro envio de `main` e `develop` concluído, com acompanhamento das branches remotas. A execução do workflow no GitHub e a primeira release continuam pendentes; esta preparação não conclui a validação integrada da etapa 9.
 
 Validação desta entrega: 52 testes passaram; Ruff, ESLint, geração de tipos do Next.js, TypeScript, build e Compose com perfil worker aprovados. Migrações chegaram a `20261026_03` em banco PostgreSQL temporário vazio, removido após o teste sem alterar o banco da aplicação. Revisão dos nomes de arquivos em todos os commits e busca por padrões comuns de tokens/chaves privadas não encontraram ocorrências; essa busca não equivale a uma auditoria completa de segurança.
+
+## Release 1.0.0 — 28/10/2026
+
+Por solicitação do usuário, a primeira versão é `1.0.0`. Branch de preparação `release/1.0.0`, versão alinhada nos manifestos do frontend/backend e no OpenAPI, histórico em `CHANGELOG.md`. Integração em `main` e retorno para `develop` com o mesmo conteúdo; tag anotada `v1.0.0`. Futuras funcionalidades partem de `develop`.
+
+A CI anterior em `develop` foi aprovada no GitHub. Esta release executa novamente os checks automatizados. Permanecem como evolução a ampliação dos coletores e a validação manual completa dos cenários da etapa 9; o número 1.0.0 não implica suporte a todos os portais ou hospedagem pública.
+
+Verificações locais da release: 52 testes aprovados, Ruff, ESLint, geração de tipos do Next.js, TypeScript, build de produção e configuração do Compose aprovados. Manifestos, package-lock e versão do OpenAPI conferidos como `1.0.0`.

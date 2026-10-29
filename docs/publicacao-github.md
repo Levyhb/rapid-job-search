@@ -39,7 +39,7 @@ git push -u origin develop
 
 Se `origin` já existir, confira sua URL antes de alterá-la. Autentique-se pelo gerenciador de credenciais do Git ou pela chave SSH; não coloque tokens na URL nem em arquivos versionados.
 
-A branch `main` mantém o estado estável já existente. `develop` contém as funcionalidades atuais e esta preparação. O primeiro envio não cria uma release nem integra automaticamente `develop` em `main`.
+O primeiro envio preservou as branches existentes. Em 28/10/2026, a release `1.0.0` passou a consolidar as funcionalidades em `main`, com tag `v1.0.0` e sincronização de `develop`. Novas implementações partem de `develop`.
 
 ## Configuração após o envio
 
@@ -61,4 +61,4 @@ git commit -m "feat: descreve a funcionalidade"
 git push -u origin feature/nome-da-funcionalidade
 ```
 
-Abra um PR para `develop`. A primeira release segue a etapa 9 do [roteiro](plano-desenvolvimento.md), após a validação integrada; a preparação para o GitHub não conclui essa etapa.
+Abra um PR para `develop`. Próximas releases seguem o [roteiro](plano-desenvolvimento.md) e o Gitflow. A versão `1.0.0` está documentada no [histórico de alterações](../CHANGELOG.md).

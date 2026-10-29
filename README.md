@@ -2,11 +2,15 @@
 
 Painel pessoal para buscar vagas remotas nos portais das empresas cadastradas.
 
+## Versão 1.0.0
+
+Primeira versão publicada em `main`, identificada pela tag `v1.0.0`. Consulte o [histórico de alterações](CHANGELOG.md). Novas funcionalidades partem de `develop` e seguem o [Gitflow](docs/gitflow.md).
+
 ## Estado atual
 
 Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos, seleção, variações e prévia de títulos também funcionam, com persistência no PostgreSQL. A coleta de portais Gupy, InHire e Greenhouse está integrada ao botão de busca, com processamento em segundo plano, contagem e resultados remotos persistidos. Os resultados têm filtros avançados por texto, empresa, cargo e nível. Sites próprios e outras plataformas podem precisar de adaptação; não há suporte universal a qualquer URL.
 
-O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–7 concluídas; próxima entrega: ampliar cobertura e consolidar a primeira release. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
+O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–7 concluídas; versão 1.0.0 consolidada; próximas entregas: ampliar a cobertura dos portais e as validações integradas. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
 
 ## Publicação no GitHub
 
@@ -129,7 +133,7 @@ O worker executa as tarefas reais de busca e deve permanecer ativo enquanto houv
 - `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
 - `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
 
-Branches `main` e `develop` preparadas; as funcionalidades concluídas estão integradas em `develop`. `main` representa o estado estável já existente. O remoto `origin` está configurado para [Levyhb/rapid-job-search](https://github.com/Levyhb/rapid-job-search), com `main` e `develop` publicadas. Consulte [docs/gitflow.md](docs/gitflow.md) e [docs/publicacao-github.md](docs/publicacao-github.md).
+Branches `main` e `develop` preparadas; as funcionalidades concluídas estão integradas em `develop`. `main` contém a versão 1.0.0. `develop` é sincronizada com a release e recebe as próximas implementações. O remoto `origin` está configurado para [Levyhb/rapid-job-search](https://github.com/Levyhb/rapid-job-search), com `main` e `develop` publicadas. Consulte [docs/gitflow.md](docs/gitflow.md) e [docs/publicacao-github.md](docs/publicacao-github.md).
 
 Detalhes dos cargos, regras e comandos manuais: [docs/cargos-e-execucao.md](docs/cargos-e-execucao.md).
 
