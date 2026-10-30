@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Icon } from "@/components/icon";
+import { SearchCompletion } from "@/components/search-completion";
 import { AdvancedFilters, emptyJobFilters, type JobFilters } from "@/components/advanced-filters";
 import { jobLink, requestApi, type ConfigurationSummary, type JobsPage, type SearchStatus } from "@/lib/search-api";
 
@@ -129,9 +130,9 @@ export function SearchPanel({ active, companiesRevision, onConfigure }: { active
       <div className="search-live-status" role="status" aria-live="polite" aria-atomic="true">
         {starting && <p className="progress-message"><span className="spinner" aria-hidden="true" /> Preparando sua pesquisa…</p>}
         {!starting && running && <p className="progress-message"><span className="spinner" aria-hidden="true" /><span>Pesquisa em andamento. <strong>{search.found_count} {search.found_count === 1 ? "vaga encontrada" : "vagas encontradas"}</strong> até agora.</span></p>}
-        {completed && <p className="completion-message"><Icon name="check" /><span>Pesquisa finalizada: <strong>{search.found_count} {search.found_count === 1 ? "vaga encontrada" : "vagas encontradas"}</strong>.</span></p>}
         {(search?.status === "interrupted" || search?.status === "cancelled") && <p className="implementation-note">Pesquisa encerrada antes da conclusão. Você pode iniciar uma nova busca.</p>}
       </div>
+      {!starting && completed && <SearchCompletion key={search.id} search={search} />}
 
       <section id="resultados" className="card results-card" aria-labelledby="results-title" aria-busy={loadingJobs}>
         <div className="results-heading"><div><span className="eyebrow">SUAS OPORTUNIDADES</span><h2 id="results-title">Vagas encontradas</h2></div><span className="badge badge-remote"><Icon name="globe" /> Remotas</span></div>

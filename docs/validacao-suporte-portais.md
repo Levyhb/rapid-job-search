@@ -87,3 +87,9 @@ Se o worker já estiver em segundo plano: `docker compose restart worker`.
 ## Navegação por navegador
 
 Playwright continua usado nos testes de navegação. Não foi adicionado um coletor genérico que clica em páginas/botões, rola infinitamente ou interpreta qualquer site próprio. As fontes atuais continuam usando os dados públicos completos com HTTPX. Sites próprios não reconhecidos recebem Precisa de adaptação, com o motivo registrado.
+
+## Interface de falhas — atualização em 28/10/2026
+
+A solicitação posterior substitui a regra inicial de manter todas as falhas apenas no console. A busca concluída agora mostra um aviso vermelho com exclamação, quantidade de sites com falha e Saber mais, ao lado do total de vagas. O modal lista nome da empresa, site e motivo, com altura fixa/rolagem interna e botão de fechar no cabeçalho. Sem confirmação/cancelamento.
+
+São usados `diagnostics` da execução; `source_validations` serve como fallback. Coleta parcial também é informada, pois a fonte não foi consultada completamente. Coleta concluída com zero vagas permanece sucesso e não aumenta o aviso. As falhas não são somadas ao total de vagas nem aplicadas aos filtros de resultados. Os logs existentes permanecem.

@@ -11,6 +11,10 @@
   --border: #e5e7f0;
   --success: #18745b;
   --success-soft: #eaf7f0;
+  --danger: #a5283c;
+  --danger-soft: #fff1f2;
+  --warning: #896514;
+  --warning-soft: #fff7db;
   --radius: 16px;
   --shadow: 0 4px 20px rgb(30 36 70 / 3%);
   --font-ui: Arial, Helvetica, sans-serif;
@@ -66,6 +70,13 @@ h1, h2, h3, p { margin: 0; }
 .search-live-status:empty { display: none; }
 .progress-message, .completion-message { display: flex; align-items: center; gap: 12px; padding: 16px 20px; margin: -12px 0 24px; border-radius: 10px; font-size: 13px; background: var(--primary-soft); color: var(--primary); }
 .completion-message { background: var(--success-soft); color: var(--success); }
+.search-completion { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin: -12px 0 24px; }
+.search-completion-with-failures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.search-completion .completion-message { margin: 0; min-width: 0; }
+.search-failure-message { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 16px 20px; border-radius: 10px; background: var(--warning-soft); color: var(--warning); font-size: 13px; }
+.search-failure-message p { flex: 1; min-width: 0; }
+.search-failure-details { flex-shrink: 0; border: 1px solid #e5d397; border-radius: 7px; padding: 7px 10px; background: white; color: var(--warning); font-size: 12px; font-weight: 600; }
+.search-failure-details:hover { background: #f8edc5; }
 .spinner { display: inline-block; width: 18px; height: 18px; flex-shrink: 0; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 800ms linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .jobs-table .job-cell { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 12px; }
@@ -157,6 +168,10 @@ h1, h2, h3, p { margin: 0; }
 .modal[open] { display: flex; flex-direction: column; }
 .modal-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 28px 28px; }
 .modal-form { min-height: min(620px, calc(100dvh - 48px)); }
+.modal-confirmation { width: min(560px, calc(100vw - 48px)); height: min(340px, calc(100dvh - 48px)); }
+.modal-confirmation .modal-heading { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.modal-confirmation .modal-content { flex: 1; }
+.modal-confirmation .modal-description { margin-bottom: 16px; font-size: 14px; }
 .modal-form .modal-content { display: flex; flex-direction: column; flex: 1; }
 .modal-form .modal-content > form { display: flex; flex-direction: column; flex: 1; }
 .modal-form form > * { flex-shrink: 0; }
@@ -196,6 +211,18 @@ h1, h2, h3, p { margin: 0; }
 .modal-batch .modal-heading { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
 .modal-batch .modal-content { display: flex; flex: 1; flex-direction: column; gap: 20px; }
 .modal-batch .modal-description { margin-bottom: 0; }
+.modal-diagnostics { width: min(760px, calc(100vw - 48px)); height: min(580px, calc(100dvh - 48px)); }
+.modal-diagnostics .modal-heading { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.modal-diagnostics .modal-content { flex: 1; scrollbar-gutter: stable; }
+.search-failures-list { list-style: none; padding: 0; margin: 0; }
+.search-failures-list li { padding: 20px 0; border-bottom: 1px solid var(--border); }
+.search-failures-list li:first-child { padding-top: 0; }
+.search-failures-list li:last-child { border-bottom: 0; }
+.search-failure-company { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 10px; overflow-wrap: anywhere; }
+.search-failure-company h3 { font-size: 14px; font-weight: 650; }
+.search-failure-company a, .search-failure-company > span { min-width: 0; color: var(--muted); font-size: 12px; }
+.search-failure-company a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+.search-failures-list li > p { margin-top: 8px; font-size: 13px; line-height: 1.7; color: var(--danger); overflow-wrap: anywhere; }
 .modal-batch .modal-content > :not(.batch-company-list) { flex-shrink: 0; }
 .batch-company-form { display: grid; grid-template-columns: 1fr 1.4fr; gap: 16px; align-items: end; }
 .modal .batch-company-form .field { margin: 0; }
@@ -360,6 +387,8 @@ h1, h2, h3, p { margin: 0; }
   .workspace-tabs { gap: 4px; padding: 4px; }
   .workspace-tabs button { flex: 1; padding: 10px 7px; font-size: 11px; gap: 5px; }
   .search-summary { grid-template-columns: 1fr; gap: 12px; }
+  .search-completion-with-failures { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .search-failure-message { flex-wrap: wrap; padding: 16px; }
   .summary-card { padding: 18px 20px; }
   .summary-card strong { font-size: 27px; }
   .configuration-intro h1 { font-size: 27px; }
