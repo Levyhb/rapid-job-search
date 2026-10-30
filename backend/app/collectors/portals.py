@@ -3,13 +3,19 @@
 import json
 import re
 import time
+import zlib
 from dataclasses import asdict, dataclass
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
 
 import httpx
 
-from app.collectors.network import PublicHTTPTransport, UnsafeTarget, validate_target
+from app.collectors.network import (
+    PublicHTTPTransport,
+    UnsafeTarget,
+    request_budget,
+    validate_target,
+)
 from app.collectors.support import identify_platform
 from app.filters.role_matching import normalize_term
 
@@ -106,14 +112,83 @@ def greenhouse_mode(item):
     return mode, evidence
 
 
-def _public_get(client, url, **kwargs):
+MAX_RESPONSE_BYTES = 10 * 1024 * 1024
+COLLECTION_SECONDS = 180
+
+
+def _remaining(deadline):
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise SourceProblem("Tempo total de coleta esgotado.", "parcial", "collection_limit")
+    return min(25, remaining)
+
+
+def _limited_body(response, deadline):
+    buffered = response.is_stream_consumed  # MockTransport pode entregar conteúdo já lido.
+    encoding = "identity" if buffered else response.headers.get("content-encoding", "identity")
+    encoding = encoding.strip().lower()
+    if encoding not in {"identity", "gzip"}:
+        raise SourceProblem(
+            "Codificação da resposta não suportada.", "parcial", "response_encoding"
+        )
+    decoder = zlib.decompressobj(16 + zlib.MAX_WBITS) if encoding == "gzip" else None
+    body = bytearray()
+    received = 0
+    chunks = [response.content] if buffered else response.iter_raw(chunk_size=65536)
+    try:
+        for chunk in chunks:
+            _remaining(deadline)
+            received += len(chunk)
+            if received > MAX_RESPONSE_BYTES:
+                raise SourceProblem(
+                    "Resposta excedeu o limite de 10 MB.", "parcial", "response_limit"
+                )
+            decoded = (
+                decoder.decompress(chunk, MAX_RESPONSE_BYTES - len(body) + 1)
+                if decoder else chunk
+            )
+            if len(body) + len(decoded) > MAX_RESPONSE_BYTES:
+                raise SourceProblem(
+                    "Resposta excedeu o limite de 10 MB.", "parcial", "response_limit"
+                )
+            body.extend(decoded)
+        _remaining(deadline)
+        if decoder and (not decoder.eof or decoder.unused_data):
+            raise httpx.DecodingError("Resposta gzip incompleta ou com membros adicionais.")
+    except zlib.error as error:
+        raise httpx.DecodingError("Resposta gzip inválida.") from error
+    return bytes(body)
+
+
+def _public_get(client, url, deadline, **kwargs):
     for redirect in range(6):
         target = validate_target(url)
-        response = client.get(target, follow_redirects=False, **kwargs)
-        if not response.is_redirect or "location" not in response.headers:
-            return response
-        next_url = response.url.join(response.headers["location"])
-        response.close()
+        headers = {**kwargs.pop("headers", {}), "Accept-Encoding": "identity"}
+        with request_budget(deadline), client.stream(
+            "GET", target, follow_redirects=False,
+            timeout=_remaining(deadline), headers=headers, **kwargs,
+        ) as response:
+            if not response.is_redirect or "location" not in response.headers:
+                if response.status_code in {401, 403, 429}:
+                    raise SourceProblem(
+                        f"Acesso limitado pela fonte (HTTP {response.status_code}).",
+                        "bloqueada", f"http_{response.status_code}", str(response.url),
+                    )
+                response.raise_for_status()
+                length = response.headers.get("content-length", "")
+                if length.isdigit() and int(length) > MAX_RESPONSE_BYTES:
+                    raise SourceProblem(
+                        "Resposta excedeu o limite de 10 MB.", "parcial", "response_limit"
+                    )
+                body = _limited_body(response, deadline)
+                result_headers = dict(response.headers)
+                for name in ("content-encoding", "content-length", "transfer-encoding"):
+                    result_headers.pop(name, None)
+                return httpx.Response(
+                    response.status_code, content=body, headers=result_headers,
+                    request=response.request,
+                )
+            next_url = response.url.join(response.headers["location"])
         if redirect == 5:
             raise SourceProblem(
                 "Limite de redirecionamentos atingido.", "bloqueada", "redirect_limit"
@@ -124,22 +199,15 @@ def _public_get(client, url, **kwargs):
         if (target.scheme, target.host, target.port) != (
             next_url.scheme, next_url.host, next_url.port
         ):
-            kwargs.pop("headers", None)
+            headers = {"Accept-Encoding": "identity"}
+        kwargs["headers"] = headers
         url = next_url
 
 
-def _read(client, url, **kwargs):
+def _read(client, url, deadline, **kwargs):
     for attempt in range(2):
         try:
-            response = _public_get(client, url, **kwargs)
-            if response.status_code in {401, 403, 429}:
-                raise SourceProblem(
-                    f"Acesso limitado pela fonte (HTTP {response.status_code}).",
-                    "bloqueada",
-                    f"http_{response.status_code}",
-                    str(response.url),
-                )
-            response.raise_for_status()
+            response = _public_get(client, url, deadline, **kwargs)
             title = re.search(r"<title[^>]*>(.*?)</title>", response.text[:200000], re.I | re.S)
             title_text = normalize_term(title.group(1)) if title else ""
             challenge = (
@@ -169,34 +237,32 @@ def _read(client, url, **kwargs):
                     "access_challenge" if challenge else "login_required",
                     str(response.url),
                 )
-            if len(response.content) > 10 * 1024 * 1024:
-                raise SourceProblem(
-                    "Resposta excedeu o limite de 10 MB.", "parcial", "response_limit"
-                )
             return response
         except UnsafeTarget as error:
             raise SourceProblem(str(error), "bloqueada", "unsafe_target") from error
         except (httpx.TimeoutException, httpx.TransportError):
+            _remaining(deadline)
             if attempt:
                 raise
-            time.sleep(0.5)
+            time.sleep(min(0.5, _remaining(deadline)))
 
 
-def _load(company, client, report):
+def _load(company, client, report, deadline):
     url = company["url"]
     report.source, tenant = identify_platform(url)
-    page = _read(client, url)
+    page = _read(client, url, deadline)
     report.resolved_url = str(page.url)
     report.source, tenant = identify_platform(report.resolved_url, page.text)
     if report.source == "inhire":
         data = _read(
-            client, "https://api.inhire.app/job-posts/public/pages", headers={"x-tenant": tenant}
+            client, "https://api.inhire.app/job-posts/public/pages", deadline,
+            headers={"x-tenant": tenant},
         ).json()
         items = data.get("jobsPage")
         if not isinstance(items, list):
             raise SourceProblem("Formato público InHire não reconhecido.", "nao_suportada")
         report.expected = len(items)
-        return _convert(items, company, report, tenant)
+        return _convert(items, company, report, tenant, deadline)
     if report.source == "gupy":
         match = re.search(r'<script[^>]+id="__NEXT_DATA__"[^>]*>(.*?)</script>', page.text, re.S)
         if not match:
@@ -212,7 +278,7 @@ def _load(company, client, report):
         visible_count = re.search(r"(\d+)\s+(?:jobs found|vagas encontradas)", page.text)
         if visible_count:
             report.expected = int(visible_count.group(1))
-        return _convert(items, company, report, tenant)
+        return _convert(items, company, report, tenant, deadline)
     token = tenant if report.source == "greenhouse" else None
     if not token or not re.fullmatch(r"[a-zA-Z0-9_-]+", token):
         raise SourceProblem(
@@ -224,19 +290,21 @@ def _load(company, client, report):
     data = _read(
         client,
         f"https://boards-api.greenhouse.io/v1/boards/{token}/jobs",
+        deadline,
         params={"content": "true"},
     ).json()
     items = data.get("jobs")
     if not isinstance(items, list):
         raise SourceProblem("Listagem Greenhouse não reconhecida.", "nao_suportada")
     report.expected = data.get("meta", {}).get("total", len(items))
-    return _convert(items, company, report, token)
+    return _convert(items, company, report, token, deadline)
 
 
-def _convert(items, company, report, tenant):
+def _convert(items, company, report, tenant, deadline):
     result = []
     host = urlsplit(report.resolved_url or company["url"]).hostname
     for item in items:
+        _remaining(deadline)
         try:
             if report.source == "inhire":
                 if item.get("status") != "published":
@@ -304,7 +372,7 @@ def collect_company(company, on_job, on_progress=lambda report: None, client=Non
     )
     try:
         try:
-            items = _load(company, client, report)
+            items = _load(company, client, report, started + COLLECTION_SECONDS)
         except SourceProblem as error:
             report.status, report.reason = error.status, str(error)
             report.reason_code = error.code
@@ -321,7 +389,7 @@ def collect_company(company, on_job, on_progress=lambda report: None, client=Non
             return report
         seen = set()
         for item in items:
-            if time.monotonic() - started > 180 or report.examined >= max_jobs:
+            if time.monotonic() - started > COLLECTION_SECONDS or report.examined >= max_jobs:
                 report.status, report.reason = "parcial", "Limite de tempo ou quantidade atingido."
                 report.reason_code = "collection_limit"
                 break

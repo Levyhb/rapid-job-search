@@ -24,8 +24,33 @@ Firewall de saída do worker e limites de recursos são defesas adicionais;
 configuração de código não comprova a política da máquina em execução.
 Os relatórios detalhados da auditoria permanecem privados fora do Git.
 
+## Limites durante a leitura
+
+O coletor recebe dados em streaming: limite de 10 MiB tanto para bytes de
+transporte quanto para o corpo descomprimido, antes de interpretar HTML/JSON.
+Content-Length acima do teto é recusado sem ler o corpo; a contagem funciona
+também sem esse cabeçalho. Corpos de redirecionamento não são baixados.
+
+Solicitamos `Accept-Encoding: identity`. Gzip também é aceito com saída
+incremental limitada; gzip truncado/concatenado e outras codificações são
+recusados. Nunca usar iter_bytes como única proteção contra expansão:
+a descompressão automática pode alocar o corpo antes da verificação.
+
+O orçamento de 180 segundos por fonte inclui rede, redirects e retries;
+timeouts de socket diminuem conforme o tempo restante. A espera de DNS é
+limitada e há no máximo duas resoluções em segundo plano; o resolvedor nativo
+que exceder o prazo pode terminar depois, sem autorizar conexão ao destino.
+O timeout de job do RQ continua como proteção adicional. Limites são
+aplicados também na validação de portal, que reutiliza o coletor.
+
 Verificação da proteção de rede: 43 testes de rede/coleta/validação passaram
 em cópia temporária sem `.env`, com resolução/conexões externas e acesso à
 infraestrutura real bloqueados. Ruff e verificação de whitespace passaram.
 Isso não demonstra a configuração de uma implantação nem substitui testes
 controlados após atualizar o worker.
+
+Após adicionar streaming, limites de expansão e orçamento de rede, os 88
+testes do backend passaram no mesmo isolamento, incluindo feeds pequenos,
+gzip legítimo, expansão excessiva, fluxo lento e fechamento antecipado.
+Ruff e `git diff --check` também passaram. O aviso de depreciação do TestClient
+do Starlette é conhecido; nenhuma troca de cliente/framework foi feita.

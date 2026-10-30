@@ -4,7 +4,7 @@
 
 - [x] Restringir saída HTTP do coletor a IPs públicos validados na conexão,
   preservar TLS e validar cada redirecionamento, sem proxies implícitos.
-- [ ] Interromper respostas grandes e lentas durante o download.
+- [x] Interromper respostas grandes e lentas durante o download.
 - [ ] Alinhar versões mínimas de segurança dos runtimes e manutenção contínua.
 
 Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são

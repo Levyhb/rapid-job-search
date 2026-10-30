@@ -105,7 +105,7 @@ def test_public_dns_keeps_host_and_tls_server_name(monkeypatch):
     assert response.text == "ok"
     assert connect.call_args.args[0] == "93.184.216.34"
     assert tls.call_args.kwargs["server_hostname"] == "portal.example"
-    assert tls.call_args.kwargs["ssl_context"].check_hostname
+    assert tls.call_args.args[0].check_hostname
 
 
 def test_redirect_loop_is_bounded():
