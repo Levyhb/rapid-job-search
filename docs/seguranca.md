@@ -1,5 +1,48 @@
 # Segurança do ambiente local
 
+## Manutenção e revisão
+
+Dependabot está configurado para npm, pip, Dockerfile, Compose e Actions.
+As versões Python fixadas foram preservadas no novo nome `backend/requirements.txt`,
+reconhecido pelo ecossistema pip. Não houve atualização geral de bibliotecas.
+Next/React têm grupos coerentes somente para patch/minor; mudanças maiores
+ficam separadas. Rotina semanal abre PRs em develop; correções de segurança
+npm/pip usam a branch padrão e devem seguir o fluxo de hotfix, sincronizando
+main/develop após revisão. Nenhum merge automático foi configurado.
+
+Os SHAs de checkout/setup-python/setup-node foram consultados nos repositórios
+oficiais actions em 30/10/2026 e fixados no CI. O workflow existente também
+roda semanalmente. Isso prepara enforcement, mas não demonstra execução
+no GitHub: o bot depende da configuração integrada na branch padrão e dos
+alertas/security updates habilitados no serviço. Não mudamos configurações
+remotas nem proteções de branch nesta entrega.
+
+Triar alertas relevantes prontamente; exigir testes e revisão antes de merge.
+Uma falha de ferramenta ou base de advisories nunca deve ser considerada scan
+limpo. Atualizações de Docker não atualizam o runtime local automaticamente;
+conferir `.python-version`, Dockerfile, `.node-version` e engines no mesmo PR.
+Não rebaixar versões nem desativar checks para aceitar um update. Exceções
+precisam de responsável, motivo, escopo e prazo. Rollback por commit/release,
+sem reexpor segredo revogado. Backups e restauração continuam exigindo
+procedimento operacional próprio; volume persistente não prova restore.
+
+Não foi instalado scanner ou enviado código/locks a scanner externo. O
+cruzamento exaustivo de advisories, histórico de segredos e configuração
+implantada permanece trabalho de verificação, não problema automaticamente
+resolvido pela configuração do bot.
+
+`scripts/security_checks.py` usa apenas a biblioteca padrão e Git: bloqueia
+patch antigo/desalinhado, actions sem SHA completo, pins Python inválidos e
+quatro padrões de segredos, imprimindo somente caminho/linha/regra. Falha de
+leitura/formato/Git encerra com código diferente de zero. Roda no check local
+e em job próprio no CI; não é hook opcional nem scanner de CVEs. Não cobre
+histórico, binários, arquivos ignorados ou todos os formatos de credencial.
+
+Verificação local: configuração válida passou; em cópia temporária, patch
+antigo, action por tag, token fictício e JSON inválido causaram falha como
+esperado, sem imprimir o token. YAML foi lido com parser e as 45 versões
+Python foram comparadas com o arquivo anterior, sem mudanças de versão.
+
 ## Node.js
 
 A versão mínima de segurança da linha 24 é 24.22.1; `.node-version` fixa a

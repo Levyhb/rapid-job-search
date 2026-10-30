@@ -16,7 +16,7 @@ if (-not (Test-Path backend/.venv/Scripts/python.exe)) {
     Invoke-Checked { & $pythonRuntime -I -m venv backend/.venv }
 }
 Assert-RapidJobPython -Executable (Join-Path (Get-Location) 'backend/.venv/Scripts/python.exe')
-Invoke-Checked { & backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.lock }
+Invoke-Checked { & backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt }
 Invoke-Checked { & backend/.venv/Scripts/python.exe -m pip install --no-deps -e './backend[dev]' }
 Invoke-Checked { & backend/.venv/Scripts/python.exe -m playwright install chromium }
 Push-Location frontend

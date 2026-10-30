@@ -30,7 +30,7 @@ O repositório inclui CI para lint, testes, migrações, TypeScript, build e val
 - Python 3.14.10 ou patch posterior da linha 3.14, acessível pelo launcher `py`.
 - Docker Desktop iniciado e usando contêineres Linux.
 
-As versões resolvidas estão em `frontend/package-lock.json` e `backend/requirements.lock`. O lock Python inclui ferramentas de desenvolvimento; o contêiner também é um ambiente de desenvolvimento.
+As versões resolvidas estão em `frontend/package-lock.json` e `backend/requirements.txt`. O arquivo Python mantém versões exatas, incluindo ferramentas de desenvolvimento, e usa o nome reconhecido pelo Dependabot; o contêiner também é um ambiente de desenvolvimento.
 
 As versões de referência estão em `.node-version` e `.python-version`.
 Os scripts também aceitam runtimes portáteis verificados em `work/security-runtimes`.
