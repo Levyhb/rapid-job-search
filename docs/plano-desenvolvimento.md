@@ -5,7 +5,8 @@
 - [x] Restringir saída HTTP do coletor a IPs públicos validados na conexão,
   preservar TLS e validar cada redirecionamento, sem proxies implícitos.
 - [x] Interromper respostas grandes e lentas durante o download.
-- [ ] Alinhar versões mínimas de segurança dos runtimes e manutenção contínua.
+- [x] Fixar Node 24.22.1 no CI e impedir uso de patch anterior nos scripts/npm.
+- [ ] Alinhar Python e manutenção contínua.
 
 Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são
 publicados no repositório. Correções seguem commits separados por causa.

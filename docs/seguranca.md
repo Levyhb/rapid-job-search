@@ -1,5 +1,24 @@
 # Segurança do ambiente local
 
+## Node.js
+
+A versão mínima de segurança da linha 24 é 24.22.1; `.node-version` fixa a
+versão usada no CI. `engines` e `.npmrc` impedem instalar o frontend com um
+runtime anterior. Os scripts setup/check/dev preferem o Node portátil em
+`work/security-runtimes/node-v24.22.1-win-x64` quando presente e verificam o
+patch antes de usar npm. O diretório work é ignorado pelo Git.
+
+Nesta máquina foi extraída a distribuição oficial Windows x64, com SHA256
+conferido contra SHASUMS256.txt da mesma versão em nodejs.org. Node global
+e PATH persistente não foram alterados. Em outras máquinas, instale um patch
+suportado da linha 24 ou prepare a distribuição portátil oficial verificada.
+Não basta editar o arquivo de versão: processos antigos devem ser reiniciados.
+
+Node 24.22.1 validado com lint, tipos de rotas, TypeScript e build de produção
+do frontend em cópia temporária sem `.env`. O build Turbopack exigiu dependências
+copiadas dentro da raiz isolada; uma tentativa anterior com junction externo
+foi recusada pelo resolvedor do bundler e não foi tratada como sucesso.
+
 O RapidJobSearch é um painel pessoal, sem contas ou isolamento entre usuários.
 Mantenha API, frontend e bancos em loopback. Publicar o código não autoriza
 hospedar a aplicação abertamente: autenticação, autorização e revisão de

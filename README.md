@@ -26,7 +26,7 @@ O repositório inclui CI para lint, testes, migrações, TypeScript, build e val
 
 ## Pré-requisitos
 
-- Windows com PowerShell, Git, Node.js 24 e npm.
+- Windows com PowerShell, Git, Node.js 24.22.1 ou patch posterior da linha 24 e npm.
 - Python 3.14 acessível pelo launcher `py`.
 - Docker Desktop iniciado e usando contêineres Linux.
 

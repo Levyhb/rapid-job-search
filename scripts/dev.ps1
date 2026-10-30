@@ -4,6 +4,8 @@ param(
     [string]$Service
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'runtime.ps1')
+if ($Service -eq 'frontend') { Use-RapidJobNode }
 Set-Location (Split-Path $PSScriptRoot -Parent)
 switch ($Service) {
     'api' {

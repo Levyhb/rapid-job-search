@@ -1,4 +1,6 @@
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'runtime.ps1')
+Use-RapidJobNode
 Set-Location (Split-Path $PSScriptRoot -Parent)
 
 function Invoke-Checked {
