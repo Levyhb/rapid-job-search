@@ -10,6 +10,7 @@
 - [x] Configurar PRs semanais de dependências, actions fixadas por SHA e CI periódico.
 - [x] Restringir worker: usuário não root, filesystem/código somente leitura,
   limites de recursos e contexto Docker sem credenciais/dados locais.
+- [x] Tratar redirect malformado como falha isolada do portal, com erro sanitizado.
 - [ ] Verificar ativação no GitHub após integração e rebuild do worker com Docker ativo.
 
 Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são

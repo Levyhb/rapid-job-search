@@ -162,3 +162,8 @@ testes do backend passaram no mesmo isolamento, incluindo feeds pequenos,
 gzip legítimo, expansão excessiva, fluxo lento e fechamento antecipado.
 Ruff e `git diff --check` também passaram. O aviso de depreciação do TestClient
 do Starlette é conhecido; nenhuma troca de cliente/framework foi feita.
+
+Conferência final: 89 testes passaram com Python 3.14.10, incluindo redirect
+malformado tratado como falha sanitizada de uma única fonte. Ruff, política
+estática e validação do Compose passaram. Não houve teste ativo de portais
+nem aplicação em produção.

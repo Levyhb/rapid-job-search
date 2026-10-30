@@ -1,5 +1,18 @@
 # Histórico de alterações
 
+## Não lançado — segurança, 30/10/2026
+
+- Saída HTTP restrita a IPs públicos validados na conexão, com TLS preservado
+  e controle de redirects, incluindo URLs malformadas.
+- Leitura em streaming com limites de bytes, expansão gzip e tempo total.
+- Node 24.22.1 e Python 3.14.10 alinhados entre ambiente do projeto, scripts e CI.
+- Dependabot, actions por SHA, checks estáticos e verificação semanal preparados.
+- Worker com privilégios/recursos reduzidos e contexto Docker limitado.
+- 89 testes do backend, lint/tipos/build do frontend e Compose validados;
+  rebuild/execução Docker e ativação dos controles no GitHub ainda pendentes.
+
+Essas mudanças estão na branch hotfix; não representam publicação de release.
+
 ## 1.0.0 — 28/10/2026
 
 Primeira versão do RapidJobSearch publicada em `main`.

@@ -99,7 +99,10 @@ def public_address(value):
 
 
 def validate_target(value):
-    url = httpx.URL(value)
+    try:
+        url = httpx.URL(value)
+    except httpx.InvalidURL as error:
+        raise UnsafeTarget("URL de destino inválida.") from error
     if (
         url.scheme not in {"http", "https"}
         or not url.host

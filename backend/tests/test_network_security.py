@@ -116,3 +116,15 @@ def test_redirect_loop_is_bounded():
         )
     assert handler.call_count == 6
     assert report.reason_code == "redirect_limit"
+
+
+def test_malformed_redirect_is_a_source_failure_without_leaking_target():
+    destination = "http://[invalid"
+    with httpx.Client(transport=httpx.MockTransport(
+        lambda request: httpx.Response(302, headers={"Location": destination})
+    )) as client:
+        report = collect_company(
+            {"nome": "Test", "url": "https://portal.example"}, lambda job: None, client=client
+        )
+    assert report.reason_code == "unsafe_target"
+    assert destination not in report.reason

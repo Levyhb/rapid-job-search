@@ -188,7 +188,10 @@ def _public_get(client, url, deadline, **kwargs):
                     response.status_code, content=body, headers=result_headers,
                     request=response.request,
                 )
-            next_url = response.url.join(response.headers["location"])
+            try:
+                next_url = response.url.join(response.headers["location"])
+            except httpx.InvalidURL as error:
+                raise UnsafeTarget("Redirecionamento inválido.") from error
         if redirect == 5:
             raise SourceProblem(
                 "Limite de redirecionamentos atingido.", "bloqueada", "redirect_limit"
