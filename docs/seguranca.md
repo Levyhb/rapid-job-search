@@ -115,6 +115,25 @@ Os relatórios detalhados da auditoria permanecem privados fora do Git.
 
 ## Limites durante a leitura
 
+O worker declara usuário 10001, filesystem e código montado somente leitura,
+tmpfs limitado em /tmp, sem capabilities, sem ganho de privilégios, com teto
+de memória de 1 GiB e 256 processos. O navegador instalado tem caminho de
+leitura compartilhado, independente do home do root. `.dockerignore` permite
+somente código/manifests necessários; `.env`, venv, dados e logs não integram
+o contexto de build. O worker recebe somente as conexões locais explícitas
+do Compose, sem carregar todas as variáveis do `.env` da API.
+
+Isso não é firewall de saída nem sandbox comprovado: Docker inativo impediu
+build/execução local. Validar a imagem e permissão de leitura do bind mount
+na implantação antes de substituir um worker. Redis continua sendo uma
+fronteira de confiança: não expor a terceiros; o worker executa tarefas da
+fila. Rotação de credenciais e alterações na infraestrutura real não foram
+realizadas. O uso de Playwright em novos adaptadores exige validação própria.
+
+Compose validado com `docker compose --profile worker config --quiet`, sem
+iniciar serviços. A verificação estática também impede USER root/ausente no
+Dockerfile. Build e execução continuam pendentes enquanto Docker não estiver ativo.
+
 O coletor recebe dados em streaming: limite de 10 MiB tanto para bytes de
 transporte quanto para o corpo descomprimido, antes de interpretar HTML/JSON.
 Content-Length acima do teto é recusado sem ler o corpo; a contagem funciona

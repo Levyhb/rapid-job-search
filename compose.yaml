@@ -31,12 +31,19 @@ services:
     profiles: ["worker"]
     build: ./backend
     init: true
-    env_file: ./backend/.env
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 1g
+    pids_limit: 256
     environment:
       DATABASE_URL: postgresql+psycopg://busca_vagas:local_dev@postgres:5432/busca_vagas
       REDIS_URL: redis://redis:6379/0
     volumes:
-      - ./backend/app:/app/app
+      - ./backend/app:/app/app:ro
     depends_on:
       postgres:
         condition: service_healthy

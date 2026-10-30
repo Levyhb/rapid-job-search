@@ -34,6 +34,9 @@ def runtime_policy():
     dockerfile = (ROOT / "backend/Dockerfile").read_text()
     if dockerfile.splitlines()[0] != f"FROM python:{python}-slim":
         errors.append("Dockerfile: alinhar patch com .python-version")
+    users = re.findall(r"^USER\s+(\S+)", dockerfile, re.MULTILINE)
+    if not users or users[-1].split(":")[0] in {"root", "0"}:
+        errors.append("Dockerfile: worker deve executar com usuário não root")
     workflow = (ROOT / ".github/workflows/ci.yml").read_text()
     for action in re.findall(r"uses:\s*(\S+)", workflow):
         if not re.fullmatch(r"[\w.-]+/[\w.-]+@[a-f0-9]{40}", action):

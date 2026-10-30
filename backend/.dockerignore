@@ -1,13 +1,10 @@
-.venv
-__pycache__
-*.egg-info
-.env*
-!.env.example
-.pytest_cache
-.ruff_cache
-data
-*.db
-*.sqlite*
-*.pem
-*.key
-*.log
+# Somente arquivos necessários à imagem; nunca enviar .env, dados ou venv ao daemon.
+*
+!app/
+!app/**
+!pyproject.toml
+!requirements.txt
+!Dockerfile
+!.dockerignore
+**/__pycache__/
+**/*.py[cod]

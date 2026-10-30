@@ -8,6 +8,8 @@
 - [x] Fixar Node 24.22.1 no CI e impedir uso de patch anterior nos scripts/npm.
 - [x] Alinhar Python 3.14.10 no ambiente local, Docker, scripts e CI.
 - [x] Configurar PRs semanais de dependências, actions fixadas por SHA e CI periódico.
+- [x] Restringir worker: usuário não root, filesystem/código somente leitura,
+  limites de recursos e contexto Docker sem credenciais/dados locais.
 - [ ] Verificar ativação no GitHub após integração e rebuild do worker com Docker ativo.
 
 Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são
