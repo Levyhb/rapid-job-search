@@ -9,6 +9,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from app.collectors.network import PublicHTTPTransport, UnsafeTarget, validate_target
 from app.collectors.support import identify_platform
 from app.filters.role_matching import normalize_term
 
@@ -105,10 +106,32 @@ def greenhouse_mode(item):
     return mode, evidence
 
 
+def _public_get(client, url, **kwargs):
+    for redirect in range(6):
+        target = validate_target(url)
+        response = client.get(target, follow_redirects=False, **kwargs)
+        if not response.is_redirect or "location" not in response.headers:
+            return response
+        next_url = response.url.join(response.headers["location"])
+        response.close()
+        if redirect == 5:
+            raise SourceProblem(
+                "Limite de redirecionamentos atingido.", "bloqueada", "redirect_limit"
+            )
+        # Parâmetros pertencem apenas à URL inicial, e headers de integração
+        # não devem atravessar origens diferentes.
+        kwargs.pop("params", None)
+        if (target.scheme, target.host, target.port) != (
+            next_url.scheme, next_url.host, next_url.port
+        ):
+            kwargs.pop("headers", None)
+        url = next_url
+
+
 def _read(client, url, **kwargs):
     for attempt in range(2):
         try:
-            response = client.get(url, **kwargs)
+            response = _public_get(client, url, **kwargs)
             if response.status_code in {401, 403, 429}:
                 raise SourceProblem(
                     f"Acesso limitado pela fonte (HTTP {response.status_code}).",
@@ -151,6 +174,8 @@ def _read(client, url, **kwargs):
                     "Resposta excedeu o limite de 10 MB.", "parcial", "response_limit"
                 )
             return response
+        except UnsafeTarget as error:
+            raise SourceProblem(str(error), "bloqueada", "unsafe_target") from error
         except (httpx.TimeoutException, httpx.TransportError):
             if attempt:
                 raise
@@ -272,7 +297,9 @@ def collect_company(company, on_job, on_progress=lambda report: None, client=Non
     owned = client is None
     client = client or httpx.Client(
         timeout=25,
-        follow_redirects=True,
+        transport=PublicHTTPTransport(),
+        trust_env=False,
+        follow_redirects=False,
         headers={"User-Agent": "RapidJobSearch/0.1 (personal career search)"},
     )
     try:

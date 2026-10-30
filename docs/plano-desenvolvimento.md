@@ -1,5 +1,15 @@
 # RapidJobSearch — plano de desenvolvimento por etapas
 
+## Segurança — 30/10/2026
+
+- [x] Restringir saída HTTP do coletor a IPs públicos validados na conexão,
+  preservar TLS e validar cada redirecionamento, sem proxies implícitos.
+- [ ] Interromper respostas grandes e lentas durante o download.
+- [ ] Alinhar versões mínimas de segurança dos runtimes e manutenção contínua.
+
+Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são
+publicados no repositório. Correções seguem commits separados por causa.
+
 Atualizado em 28/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
 
 ## Objetivo da primeira versão
