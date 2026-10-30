@@ -24,6 +24,33 @@ Mantenha API, frontend e bancos em loopback. Publicar o código não autoriza
 hospedar a aplicação abertamente: autenticação, autorização e revisão de
 origens/Host/CSRF são requisitos para uma futura hospedagem.
 
+## Python
+
+O runtime Python de referência é 3.14.10, fixado em `.python-version`, no CI
+e na imagem Docker. Os scripts e o atalho `py run` conferem o interpretador
+efetivo do venv antes de executar migrações ou iniciar a API.
+
+Nesta máquina o Python Install Manager extraiu o runtime oficial com índice
+assinado para `work/security-runtimes/python-3.14.10` usando `--target`, sem
+substituir a instalação global. O venv foi atualizado com `venv --upgrade
+--without-pip`, preservando pacotes; backup dos scripts e pyvenv.cfg está em
+work/security-runtimes. Não remova o runtime portátil enquanto o venv o usa.
+
+Para atualizar outra máquina Windows com o gerenciador oficial:
+
+```powershell
+py install --target .\work\security-runtimes\python-3.14.10 3.14.10
+.\work\security-runtimes\python-3.14.10\python.exe -I -m venv --upgrade --without-pip backend/.venv
+```
+
+Atualizar arquivos não muda processos já iniciados: reinicie API e worker
+quando for aplicar o código. A imagem fixada precisa de rebuild; a auditoria
+não demonstrou a versão de um contêiner já em execução.
+
+Os 88 testes do backend e Ruff passaram novamente com Python 3.14.10.
+O daemon Docker estava indisponível nesta máquina: a imagem não foi
+reconstruída e a eficácia em contêiner permanece pendente de verificação.
+
 ## Saída HTTP do coletor
 
 Coleta e validação de portais usam a mesma política: somente HTTP(S), portas

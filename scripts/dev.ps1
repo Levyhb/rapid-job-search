@@ -9,6 +9,7 @@ if ($Service -eq 'frontend') { Use-RapidJobNode }
 Set-Location (Split-Path $PSScriptRoot -Parent)
 switch ($Service) {
     'api' {
+        Assert-RapidJobPython -Executable (Join-Path (Get-Location) 'backend/.venv/Scripts/python.exe')
         Set-Location backend
         & .venv/Scripts/python.exe -m alembic upgrade head
         if ($LASTEXITCODE -ne 0) { throw 'Nao foi possivel preparar o banco. Inicie a infraestrutura com .\scripts\dev.ps1 infra.' }

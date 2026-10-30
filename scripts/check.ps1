@@ -2,6 +2,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'runtime.ps1')
 Use-RapidJobNode
 Set-Location (Split-Path $PSScriptRoot -Parent)
+Assert-RapidJobPython -Executable (Join-Path (Get-Location) 'backend/.venv/Scripts/python.exe')
 
 function Invoke-Checked {
     param([scriptblock]$Command)
