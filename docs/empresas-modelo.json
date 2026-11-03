@@ -1,4 +1,9 @@
 {
   "versao": 1,
-  "empresas": []
+  "empresas": [
+    {
+      "nome": "Empresa Exemplo",
+      "url": "https://carreiras.example.org/vagas"
+    }
+  ]
 }
