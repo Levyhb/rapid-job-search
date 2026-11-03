@@ -43,6 +43,11 @@ class CollectionReport:
     reason: str = ""
     reason_code: str = ""
     resolved_url: str = ""
+    duration_seconds: float = 0
+    details_opened: int = 0
+    requests: int = 0
+    resolved_jobs: int = 0
+    click_failures: int = 0
 
 
 class SourceProblem(Exception):

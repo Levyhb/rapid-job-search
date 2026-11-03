@@ -16,19 +16,22 @@ from app.services.portal_validation import PortalValidationService, get_validati
 
 
 def test_detection_including_embedded_and_lookalike_hosts():
-    assert identify_platform("https://alice.inhire.app/vagas") == ("inhire", "alice")
-    assert identify_platform("https://afya.gupy.io/") == ("gupy", "afya")
-    assert identify_platform("https://job-boards.greenhouse.io/arcoeducacao") == (
+    assert identify_platform("https://tenant-exemplo.inhire.app/vagas") == (
+        "inhire",
+        "tenant-exemplo",
+    )
+    assert identify_platform("https://tenant-exemplo.gupy.io/") == ("gupy", "tenant-exemplo")
+    assert identify_platform("https://job-boards.greenhouse.io/board-exemplo") == (
         "greenhouse",
-        "arcoeducacao",
+        "board-exemplo",
     )
     assert identify_platform("https://fake.gupy.io.example.org")[0] == "unknown"
     page = (
-        '<script src="https://boards.greenhouse.io/embed/job_board/js?for=arcoeducacao"></script>'
+        '<script src="https://boards.greenhouse.io/embed/job_board/js?for=board-exemplo"></script>'
     )
     assert identify_platform("https://example.org/carreiras", page) == (
         "greenhouse",
-        "arcoeducacao",
+        "board-exemplo",
     )
 
 
@@ -81,8 +84,10 @@ def test_login_redirect_is_blocked_and_normal_login_link_is_not():
 def test_redirect_to_known_platform_is_followed_and_used_for_job_links():
     def handler(request):
         if request.url.host == "careers.example.org":
-            return httpx.Response(302, headers={"Location": "https://alice.inhire.app/vagas"})
-        if request.url.host == "alice.inhire.app":
+            return httpx.Response(
+                302, headers={"Location": "https://tenant-exemplo.inhire.app/vagas"}
+            )
+        if request.url.host == "tenant-exemplo.inhire.app":
             return httpx.Response(200, text="<html>Portal</html>")
         return httpx.Response(
             200,
@@ -104,7 +109,7 @@ def test_redirect_to_known_platform_is_followed_and_used_for_job_links():
             {"nome": "Test", "url": "https://careers.example.org"}, jobs.append, client=client
         )
     assert report.status == "concluida"
-    assert jobs[0].url.startswith("https://alice.inhire.app/vagas/")
+    assert jobs[0].url.startswith("https://tenant-exemplo.inhire.app/vagas/")
 
 
 def test_inconclusive_network_is_not_called_incompatible_and_zero_jobs_can_be_compatible():

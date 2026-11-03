@@ -28,7 +28,7 @@ Formato compartilhável (a linha abaixo é apenas exemplo, não dado cadastrado)
 }
 ```
 
-O arquivo `docs/empresas-modelo.json` fornece o formato vazio. A lista real do usuário poderá ser formatada posteriormente, quando fornecida.
+O arquivo `docs/empresas-modelo.json` apresenta o formato com uma empresa fictícia. Substitua o nome e a URL de exemplo antes de importar sua própria lista.
 
 ## Persistência
 

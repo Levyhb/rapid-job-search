@@ -8,7 +8,7 @@ Implementado em 26/10/2026.
 - Ao cadastrar ou editar uma empresa pela API/tela, salvar o cadastro primeiro e agendar a validação no worker RQ. A requisição não espera a coleta remota terminar.
 - Validar a leitura usando o coletor real e sua cobertura. Reconhecer apenas o domínio não torna um site compatível automaticamente.
 - Em cada busca, produzir uma nova validação por fonte, persistida no relatório da execução, e enviá-la no acompanhamento.
-- Registrar os rótulos no backend e no `console.log` do navegador; não criar indicador de erros, contagem de erros ou modal nesta entrega.
+- Registrar os rótulos nos logs e apresentar falhas de consulta no contador/modal da busca.
 
 ## Rótulos
 
@@ -34,12 +34,12 @@ Exemplo de log:
 Cada registro inclui `company_id`, `company`, `url`, `resolved_url`, `platform`, `support_status`, `label`, `validation_state`, `collection_status`, `code`, `message`, `checked_at` e cobertura (`examined`, `expected`, `batches`). Os códigos distinguem, por exemplo, `access_challenge`, `login_required`, `http_403`, `network_error`, `unsupported_portal`, `incomplete_coverage` e `validation_unavailable`.
 
 - `GET /api/searches/{id}` inclui `source_validations` para todas as fontes terminadas, inclusive compatíveis.
-- `diagnostics` e `GET /api/searches/{id}/diagnostics` contêm apenas fontes que não concluíram a coleta, com os mesmos detalhes estruturados.
+- `diagnostics` e `GET /api/searches/{id}/diagnostics` contêm apenas falhas de consulta (`has_failure=true`). Coletas parciais com anúncios examinados permanecem em `source_validations` como avisos (`has_warning=true`), sem entrar no contador/modal de falhas. A classificação é recalculada para relatórios antigos.
 - O total `found_count` continua contando somente vagas compatíveis persistidas. Classificações e falhas nunca viram vagas nem alteram artificialmente esse total.
 - O frontend identifica cada evento por ID e não repete o mesmo log a cada polling/troca de aba.
 - Execuções antigas sem data de validação por fonte retornam `checked_at: null`, sem inventar uma data de conferência.
 
-Esses registros são a base para o futuro modal “quais sites falharam e por quê”. O desenho desse modal e a definição da contagem ficam para uma próxima solicitação.
+O modal **Saber mais** utiliza esses registros para listar as fontes cuja consulta falhou e os respectivos motivos.
 
 ## Validação no cadastro
 
@@ -77,13 +77,25 @@ Os comandos existentes permanecem: iniciar infraestrutura, API, frontend e worke
 
 Se o worker já estiver em segundo plano: `docker compose restart worker`.
 
-## Validação realizada
+## Verificação e navegação
 
-- 43 testes do backend passaram: identificação, host parecido, redirects, embed, bloqueio HTTP/200, login, falha de rede, zero anúncios válido, versão de URL, remoção, fila indisponível sem perda do cadastro e respostas estruturadas de busca, além das verificações anteriores.
-- Validações enfileiradas com RQ, worker Linux e PostgreSQL reais: Alice/InHire, Afya/Gupy e Arco/Greenhouse retornaram Compatível. Resultados de cadastro armazenados no banco.
-- Teste controlado de navegador confirmou os três rótulos no console, ausência de contador/modal/mensagens de erro na tela e deduplicação dos logs.
-- Build, TypeScript, ESLint e Ruff verificados.
+Os testes usam empresas fictícias e respostas controladas para validar detecção
+de plataforma, hosts semelhantes, redirects, embeds, bloqueios, login, falhas
+de rede, estado vazio, edição/remoção e indisponibilidade da fila. Testes do
+worker verificam persistência, resultados e diagnósticos isolados por fonte.
 
-## Navegação por navegador
+O Playwright é o fallback genérico para fontes sem formato HTTP reconhecido.
+Os limites de renderização, cliques e paginação estão em
+[Coleta com Playwright](coleta-playwright.md).
 
-Playwright continua usado nos testes de navegação. Não foi adicionado um coletor genérico que clica em páginas/botões, rola infinitamente ou interpreta qualquer site próprio. As fontes atuais continuam usando os dados públicos completos com HTTPX. Sites próprios não reconhecidos recebem Precisa de adaptação, com o motivo registrado.
+## Interface de falhas
+
+Ao concluir a pesquisa, o frontend apresenta um aviso com exclamação,
+quantidade de sites com falha e **Saber mais**, ao lado do total de vagas.
+O modal possui cabeçalho, botão de fechar e conteúdo com rolagem; lista empresa,
+URL e motivo da falha.
+
+A interface utiliza `has_failure` dos diagnósticos. Coletas parciais com anúncios
+examinados ficam como avisos técnicos, exceto quando todas as aberturas por
+clique falharam e nenhuma URL individual foi confirmada. Leitura concluída com
+zero vagas permanece sucesso. Falhas não são somadas ao total de resultados.

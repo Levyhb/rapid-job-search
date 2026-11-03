@@ -88,6 +88,54 @@ def test_queue_failure_does_not_leave_active_execution(configured):
     assert client.get("/api/configuration/summary").json()["active_search_id"] is None
 
 
+def test_default_worker_consumes_browser_events_and_persists_partial_diagnostics(configured):
+    client, _, _ = configured
+    run_id = client.post("/api/searches").json()["id"]
+    factory = contextmanager(app.dependency_overrides[get_session])
+
+    def events(companies, roles):
+        company = next(c for c in companies if c["nome"] == "Boa")
+        assert roles[0]["nome"] == "Desenvolvedor"
+        yield (
+            "job",
+            CollectedJob(
+                "browser:test",
+                "Boa",
+                "Dev Backend Remoto",
+                "https://example.org/jobs/1",
+                "remote",
+                "Remoto",
+            ),
+        )
+        yield "progress", {"company": "Boa", "url": company["url"], "status": "consultando"}
+        yield (
+            "report",
+            (
+                company,
+                CollectionReport(
+                    "Boa",
+                    company["url"],
+                    status="parcial",
+                    source="playwright",
+                    examined=1,
+                    reason="Cobertura não confirmada.",
+                    reason_code="browser_coverage_unverified",
+                    duration_seconds=2.5,
+                    requests=3,
+                ),
+            ),
+        )
+
+    with patch("app.workers.searches.collect_events", side_effect=events):
+        run_search(run_id, factory)
+    status = client.get(f"/api/searches/{run_id}").json()
+    assert status["status"] == "completed" and status["found_count"] == 1
+    assert status["diagnostics"] == []
+    assert status["source_validations"][0]["has_warning"] is True
+    assert status["source_validations"][0]["has_failure"] is False
+    assert status["source_validations"][0]["coverage"]["duration_seconds"] == 2.5
+
+
 def test_pagination_and_worker_crash_recovery(configured):
     client, queue, _ = configured
     run_id = client.post("/api/searches").json()["id"]

@@ -58,9 +58,9 @@ def test_missing_pages_and_limits_are_partial_not_complete():
 
 def test_inhire_public_feed_and_identity():
     def handler(request):
-        if request.url.host == "alice.inhire.app":
-            return httpx.Response(200, text="<html>Portal Alice</html>")
-        assert request.headers["x-tenant"] == "alice"
+        if request.url.host == "tenant-exemplo.inhire.app":
+            return httpx.Response(200, text="<html>Portal Empresa Exemplo</html>")
+        assert request.headers["x-tenant"] == "tenant-exemplo"
         return httpx.Response(
             200,
             json={
@@ -79,10 +79,12 @@ def test_inhire_public_feed_and_identity():
     jobs = []
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         report = collect_company(
-            {"nome": "Alice", "url": "https://alice.inhire.app/vagas"}, jobs.append, client=client
+            {"nome": "Empresa Exemplo", "url": "https://tenant-exemplo.inhire.app/vagas"},
+            jobs.append,
+            client=client,
         )
     assert report.status == "concluida"
-    assert jobs[0].identity == "inhire:alice:abc"
+    assert jobs[0].identity == "inhire:tenant-exemplo:abc"
     assert jobs[0].location == "Brasil"
 
 

@@ -2,7 +2,7 @@
 
 Os pedidos mais recentes do usuário prevalecem sobre os pontos conflitantes do plano original.
 
-Nome da aplicação: **RapidJobSearch**. Roteiro de implementação atualizado em `docs/plano-desenvolvimento.md`.
+Nome da aplicação: **RapidJobSearch**. Planos e roteiros de desenvolvimento ficam apenas na pasta local `/plans`, ignorada pelo Git.
 
 - Cadastro de empresas por nome e URL.
 - Empresas salvas em arquivo JSON local (caminho configurável), com importação/exportação compartilhável junto do cadastro. PostgreSQL permanece para configurações, execuções e vagas; o catálogo JSON será a fonte do cadastro.

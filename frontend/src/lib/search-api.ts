@@ -19,7 +19,16 @@ export type SourceValidation = {
   url?: string; resolved_url?: string; platform?: string; checked_at?: string | null;
   label?: string; support_status?: "compatible" | "needs_adaptation" | "access_blocked" | null;
   collection_status?: string; code?: string; validation_state?: string;
+  has_failure?: boolean; has_warning?: boolean;
+  coverage?: { examined?: number | null };
 };
+
+export function isSourceFailure(item: SourceValidation): boolean {
+  if (typeof item.has_failure === "boolean") return item.has_failure;
+  const status = item.collection_status ?? item.status;
+  if (status === "parcial" && (item.coverage?.examined ?? 0) > 0) return false;
+  return status ? status !== "concluida" && status !== "consultando" : item.support_status !== "compatible";
+}
 
 export type JobsPage = {
   items: { id: string; company: string; title: string; url: string; modality: "remote" | "hybrid" | "onsite" | "unknown"; location?: string }[];

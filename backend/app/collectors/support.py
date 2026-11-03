@@ -26,6 +26,20 @@ def identify_platform(url, page_html=""):
     return "unknown", None
 
 
+def collection_failed(report):
+    """Anúncios lidos com cobertura parcial são avisos, não falhas de acesso/coleta."""
+    status = report.get("collection_status", report.get("status"))
+    if status in {"concluida", "consultando"}:
+        return False
+    examined = report.get("examined")
+    if examined is None:
+        examined = (report.get("coverage") or {}).get("examined", 0)
+    coverage = report.get("coverage") or report
+    if coverage.get("click_failures", 0) and not coverage.get("resolved_jobs", 0):
+        return True
+    return not (status == "parcial" and (examined or 0) > 0)
+
+
 def support_diagnostic(report, company_id=None, event_id=None):
     status = report["status"]
     code = report.get("reason_code", "")
@@ -48,6 +62,8 @@ def support_diagnostic(report, company_id=None, event_id=None):
         "label": label,
         "validation_state": "completed" if support else "inconclusive",
         "collection_status": status,
+        "has_failure": collection_failed(report),
+        "has_warning": status == "parcial" and not collection_failed(report),
         "code": code or status,
         "message": report.get("reason")
         or (
@@ -56,7 +72,19 @@ def support_diagnostic(report, company_id=None, event_id=None):
             else "Não foi possível concluir a validação desta fonte."
         ),
         "checked_at": datetime.now(UTC).isoformat(),
-        "coverage": {key: report.get(key) for key in ("examined", "expected", "batches")},
+        "coverage": {
+            key: report.get(key)
+            for key in (
+                "examined",
+                "expected",
+                "batches",
+                "duration_seconds",
+                "details_opened",
+                "requests",
+                "resolved_jobs",
+                "click_failures",
+            )
+        },
     }
 
 
