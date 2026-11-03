@@ -2,20 +2,17 @@
 
 ## Manutenção e revisão
 
-Dependabot está configurado para npm, pip, Dockerfile, Compose e Actions.
-As versões Python fixadas foram preservadas no novo nome `backend/requirements.txt`,
-reconhecido pelo ecossistema pip. Não houve atualização geral de bibliotecas.
-Next/React têm grupos coerentes somente para patch/minor; mudanças maiores
-ficam separadas. Rotina semanal abre PRs em develop; correções de segurança
-npm/pip usam a branch padrão e devem seguir o fluxo de hotfix, sincronizando
-main/develop após revisão. Nenhum merge automático foi configurado.
+Atualizações de dependências passam por análise e aprovação manual do usuário.
+O agendamento `.github/dependabot.yml` foi removido em 03/11/2026. A alteração
+precisa chegar à branch padrão para interromper os PRs de versão no GitHub.
+PRs automáticos de segurança têm opção remota separada (Dependabot security
+updates); desativá-la não exige desativar alertas, dependency graph ou os checks.
+Essa opção e a publicação estão pendentes de autenticação nesta máquina.
 
-Os SHAs de checkout/setup-python/setup-node foram consultados nos repositórios
-oficiais actions em 30/10/2026 e fixados no CI. O workflow existente também
-roda semanalmente. Isso prepara enforcement, mas não demonstra execução
-no GitHub: o bot depende da configuração integrada na branch padrão e dos
-alertas/security updates habilitados no serviço. Não mudamos configurações
-remotas nem proteções de branch nesta entrega.
+Manter os checks de segurança e revisão da CI. Preparar um único PR manual
+com versões selecionadas e compatíveis; não juntar majors apenas por serem
+mais novas. Migrações de dados e mudanças incompatíveis precisam de validação
+específica. Análise dos PRs existentes em [revisao-dependencias-2026-11-03.md](revisao-dependencias-2026-11-03.md).
 
 Triar alertas relevantes prontamente; exigir testes e revisão antes de merge.
 Uma falha de ferramenta ou base de advisories nunca deve ser considerada scan

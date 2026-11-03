@@ -216,3 +216,7 @@ Por solicitação do usuário, a primeira versão é `1.0.0`. Branch de prepara�
 A CI anterior em `develop` foi aprovada no GitHub. Esta release executa novamente os checks automatizados. Permanecem como evolução a ampliação dos coletores e a validação manual completa dos cenários da etapa 9; o número 1.0.0 não implica suporte a todos os portais ou hospedagem pública.
 
 Verificações locais da release: 52 testes aprovados, Ruff, ESLint, geração de tipos do Next.js, TypeScript, build de produção e configuração do Compose aprovados. Manifestos, package-lock e versão do OpenAPI conferidos como `1.0.0`.
+
+## Revisão manual de dependências — 03/11/2026
+
+Branch `feature/revisao-manual-dependencias`: removido agendamento do Dependabot e documentada a revisão dos 12 PRs do bot, CI e auditorias npm/OSV em [revisao-dependencias-2026-11-03.md](revisao-dependencias-2026-11-03.md). Sem atualização de pacotes ou merge de PRs. Publicação, desativação de PRs de segurança e fechamento dos adiáveis dependem de autenticação GitHub.
