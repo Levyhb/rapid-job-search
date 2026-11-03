@@ -1,4 +1,6 @@
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'runtime.ps1')
+Use-RapidJobNode
 Set-Location (Split-Path $PSScriptRoot -Parent)
 
 function Invoke-Checked {
@@ -10,9 +12,11 @@ function Invoke-Checked {
 if (-not (Test-Path backend/.env)) { Copy-Item backend/.env.example backend/.env }
 if (-not (Test-Path frontend/.env.local)) { Copy-Item frontend/.env.example frontend/.env.local }
 if (-not (Test-Path backend/.venv/Scripts/python.exe)) {
-    Invoke-Checked { py -3.14 -m venv backend/.venv }
+    $pythonRuntime = Get-RapidJobPython
+    Invoke-Checked { & $pythonRuntime -I -m venv backend/.venv }
 }
-Invoke-Checked { & backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.lock }
+Assert-RapidJobPython -Executable (Join-Path (Get-Location) 'backend/.venv/Scripts/python.exe')
+Invoke-Checked { & backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt }
 Invoke-Checked { & backend/.venv/Scripts/python.exe -m pip install --no-deps -e './backend[dev]' }
 Invoke-Checked { & backend/.venv/Scripts/python.exe -m playwright install chromium }
 Push-Location frontend

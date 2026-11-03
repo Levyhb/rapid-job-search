@@ -1,5 +1,10 @@
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'runtime.ps1')
+Use-RapidJobNode
 Set-Location (Split-Path $PSScriptRoot -Parent)
+Assert-RapidJobPython -Executable (Join-Path (Get-Location) 'backend/.venv/Scripts/python.exe')
+& backend/.venv/Scripts/python.exe -I scripts/security_checks.py
+if ($LASTEXITCODE -ne 0) { throw 'Verificação de segurança falhou.' }
 
 function Invoke-Checked {
     param([scriptblock]$Command)

@@ -1,6 +1,37 @@
 # RapidJobSearch — plano de desenvolvimento por etapas
 
-Atualizado em 29/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
+## Segurança — 30/10/2026
+
+- [x] Restringir saída HTTP do coletor a IPs públicos validados na conexão,
+  preservar TLS e validar cada redirecionamento, sem proxies implícitos.
+- [x] Interromper respostas grandes e lentas durante o download.
+- [x] Fixar Node 24.22.1 no CI e impedir uso de patch anterior nos scripts/npm.
+- [x] Alinhar Python 3.14.10 no ambiente local, Docker, scripts e CI.
+- [x] Configurar PRs semanais de dependências, actions fixadas por SHA e CI periódico.
+- [x] Restringir worker: usuário não root, filesystem/código somente leitura,
+  limites de recursos e contexto Docker sem credenciais/dados locais.
+- [x] Tratar redirect malformado como falha isolada do portal, com erro sanitizado.
+- [ ] Verificar ativação no GitHub após integração e rebuild do worker com Docker ativo.
+
+Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são
+publicados no repositório. Correções seguem commits separados por causa.
+
+## Segurança — 30/10/2026
+
+- [x] Restringir saída HTTP do coletor a IPs públicos validados na conexão,
+  preservar TLS e validar cada redirecionamento, sem proxies implícitos.
+- [x] Interromper respostas grandes e lentas durante o download.
+- [x] Fixar Node 24.22.1 no CI e impedir uso de patch anterior nos scripts/npm.
+- [x] Alinhar Python 3.14.10 no ambiente local, Docker, scripts e CI.
+- [x] Configurar PRs semanais de dependências, actions fixadas por SHA e CI periódico.
+- [x] Restringir worker: usuário não root, filesystem/código somente leitura,
+  limites de recursos e contexto Docker sem credenciais/dados locais.
+- [x] Tratar redirect malformado como falha isolada do portal, com erro sanitizado.
+- [ ] Verificar ativação no GitHub após integração e rebuild do worker com Docker ativo.
+
+Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são
+publicados no repositório. Correções seguem commits separados por causa.
+
 
 ## Objetivo da primeira versão
 

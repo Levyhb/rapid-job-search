@@ -23,6 +23,21 @@ def main():
         return 1
 
     try:
+        minimum = (backend.parent / ".python-version").read_text(encoding="utf-8").strip()
+        probe = subprocess.run(
+            [
+                str(python), "-I", "-c",
+                "import sys; minimum=tuple(map(int,sys.argv[1].split('.'))); "
+                "sys.exit(0 if sys.version_info[:2] == (3,14) "
+                "and sys.version_info[:3] >= minimum else 1)",
+                minimum,
+            ],
+            cwd=backend,
+        )
+        if probe.returncode:
+            print(f"Atualize o ambiente virtual para Python 3.14 com patch >= {minimum}.",
+                  file=sys.stderr)
+            return 1
         migration = subprocess.run([str(python), "-m", "alembic", "upgrade", "head"], cwd=backend)
         if migration.returncode:
             print(
