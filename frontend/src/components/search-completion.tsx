@@ -4,14 +4,11 @@ import { useState } from "react";
 
 import { Icon } from "@/components/icon";
 import { Modal } from "@/components/modal";
-import { jobLink, type SearchStatus } from "@/lib/search-api";
+import { isSourceFailure, jobLink, type SearchStatus } from "@/lib/search-api";
 
 export function SearchCompletion({ search }: { search: SearchStatus }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const failures = (search.diagnostics ?? search.source_validations ?? []).filter((item) => {
-    const status = item.collection_status ?? item.status;
-    return status ? status !== "concluida" && status !== "consultando" : item.support_status !== "compatible";
-  });
+  const failures = (search.source_validations ?? search.diagnostics ?? []).filter(isSourceFailure);
 
   return (
     <>
@@ -27,7 +24,7 @@ export function SearchCompletion({ search }: { search: SearchStatus }) {
         </div>}
       </div>
       {detailsOpen && <Modal title="Sites com falha na busca" variant="diagnostics" onClose={() => setDetailsOpen(false)}>
-        <p className="modal-description">Não foi possível consultar completamente os sites abaixo. As vagas encontradas nos demais portais continuam disponíveis; coletas parciais também podem ter retornado vagas.</p>
+        <p className="modal-description">Não foi possível acessar ou reconhecer a listagem de vagas dos sites abaixo. As vagas encontradas nos demais portais continuam disponíveis.</p>
         <ul className="search-failures-list" aria-label="Empresas e motivos das falhas">
           {failures.map((item) => {
             const url = item.url ?? item.resolved_url ?? "";

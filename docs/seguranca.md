@@ -164,3 +164,8 @@ Conferência final: 89 testes passaram com Python 3.14.10, incluindo redirect
 malformado tratado como falha sanitizada de uma única fonte. Ruff, política
 estática e validação do Compose passaram. Não houve teste ativo de portais
 nem aplicação em produção.
+
+
+## Navegação de coleta
+
+O fallback Playwright utiliza requisições GET mediadas pelo mesmo transporte HTTPX público, com proxy sem saída no Chromium, contextos isolados, service workers/sockets/downloads bloqueados e navegações resolvidas previamente. POST não é permitido no coletor. Não há adaptadores específicos por empresa. Os limites e restrições estão em [Coleta com Playwright](coleta-playwright.md).

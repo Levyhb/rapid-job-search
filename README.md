@@ -8,7 +8,9 @@ Você não precisa cadastrar cada vaga: **cadastre as empresas e os cargos; a ap
 
 Ao clicar em **Buscar vagas**, a API cria uma pesquisa e a coloca em uma fila. Um worker Python consulta os portais, compara os títulos com os cargos selecionados, descarta duplicatas e salva as vagas compatíveis. A interface acompanha o progresso e apresenta uma tabela paginada, com empresa, título, modalidade e link para o anúncio. Os filtros avançados permitem refinar os resultados por texto, empresa, cargo e nível. Quando algum site falha, o aviso **Saber mais** mostra os motivos.
 
-A versão atual busca **somente vagas com modalidade remota confirmada** e possui coletores para Gupy, InHire e Greenhouse. A coleta utiliza HTTPX para ler dados públicos JSON ou incorporados no HTML; Playwright é usado nos testes de navegação. Sites próprios e plataformas diferentes podem precisar de adaptação: cadastrar uma URL não garante que ela seja compatível.
+A versão atual busca **somente vagas com modalidade remota confirmada** e possui coletores para Gupy, InHire e Greenhouse. A coleta utiliza HTTPX para ler dados públicos JSON ou incorporados no HTML; Playwright/Chromium é usado como fallback para ler páginas renderizadas quando o formato público não é reconhecido. Sites próprios e plataformas diferentes podem precisar de adaptação: cadastrar uma URL não garante que ela seja compatível.
+
+Detalhes da navegação, limites e diagnóstico: [Coleta com Playwright](docs/coleta-playwright.md).
 
 ## Como rodar o projeto
 
@@ -23,7 +25,7 @@ As instruções abaixo são para **Windows com PowerShell**. Execute os comandos
 | Banco | PostgreSQL, SQLAlchemy e Alembic | Salvar cargos, pesquisas e vagas; criar/atualizar tabelas. |
 | Fila | Redis e RQ | Organizar tarefas de busca em segundo plano. |
 | Worker | Processo Python em um contêiner Docker | Executar a coleta dos portais. |
-| Coleta e testes | HTTPX e Playwright/Chromium | Consultar as fontes públicas e testar a navegação, respectivamente. |
+| Coleta e testes | HTTPX e Playwright/Chromium | Consultar fontes públicas e coletar anúncios de páginas renderizadas. |
 
 ### 1. Instalar os requisitos
 
@@ -98,7 +100,7 @@ O script prepara **backend e frontend**:
 1. Cria `backend/.env` e `frontend/.env.local` a partir dos exemplos, caso ainda não existam.
 2. Cria o ambiente virtual Python em `backend/.venv`, caso esteja ausente, e confere sua versão.
 3. Instala as bibliotecas Python de `backend/requirements.txt` e o pacote local do backend.
-4. Instala o Chromium do Playwright para os testes de navegação.
+4. Instala o Chromium do Playwright para coleta e testes de navegação.
 5. Instala os pacotes do frontend com `npm ci`.
 6. Garante PostgreSQL e Redis ativos e aplica as migrações, que criam/atualizam as tabelas do banco.
 
@@ -208,7 +210,7 @@ O script executa a política estática de segurança, Ruff, testes Python, ESLin
 ## Como realizar a primeira busca
 
 1. Com todos os serviços ativos, abra [a interface](http://127.0.0.1:3000) e entre na aba **Empresas e cargos**.
-2. Em **Adicionar empresa**, informe nome e URL do portal de carreiras. Clique em **Adicionar** para montar a lista e depois em **Salvar** para persistir as empresas. Você também pode usar **Importar JSON** com o [exemplo de empresas](docs/empresas-primeira-coleta.json).
+2. Em **Adicionar empresa**, informe nome e URL do portal de carreiras. Clique em **Adicionar** para montar a lista e depois em **Salvar** para persistir as empresas. Você também pode usar **Importar JSON** com o [modelo JSON](docs/empresas-modelo.json), substituindo o nome e a URL fictícios pelos dados que deseja cadastrar.
 3. Cadastre os **cargos** desejados. Por exemplo, nome `Desenvolvedor Backend` com variações `Backend`, `Back-end Developer` e `Backend Engineer`. Deixe selecionados os cargos que devem participar da busca. Os termos são alternativas: basta um deles corresponder ao título.
 4. Volte à aba **Busca por vagas**. Confira as quantidades de empresas cadastradas e cargos selecionados e clique em **Buscar vagas**.
 5. Acompanhe o loading e a contagem de vagas encontradas. Depois da conclusão, consulte a tabela, use os filtros avançados e abra o título para acessar o anúncio original.

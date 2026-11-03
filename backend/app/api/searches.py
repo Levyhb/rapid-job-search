@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.api.companies import get_catalog
-from app.collectors.support import support_diagnostic
+from app.collectors.support import collection_failed, support_diagnostic
 from app.core.config import get_settings
 from app.core.database import get_session
 from app.filters.levels import LEVELS
@@ -49,10 +49,17 @@ def recover_run(run, session, queue):
 
 def run_payload(run, session):
     validations = [
-        report.get("validation")
-        or {
-            **support_diagnostic(report, event_id=f"{run.id}:{index}"),
-            "checked_at": None,  # Execuções antigas não registravam a data por fonte.
+        {
+            **(
+                report.get("validation")
+                or {
+                    **support_diagnostic(report, event_id=f"{run.id}:{index}"),
+                    "checked_at": None,  # Execuções antigas não registravam a data por fonte.
+                }
+            ),
+            # Recalcular inclusive relatórios antigos; não depender de flags salvas anteriormente.
+            "has_failure": collection_failed(report),
+            "has_warning": report["status"] == "parcial" and not collection_failed(report),
         }
         for index, report in enumerate(run.reports)
         if report["status"] != "consultando"
@@ -67,7 +74,7 @@ def run_payload(run, session):
         "diagnostics": [
             {**item, "status": item["collection_status"]}
             for item in validations
-            if item["collection_status"] != "concluida"
+            if item["has_failure"]
         ],
     }
 
@@ -177,13 +184,14 @@ def search_jobs(
         candidates = session.scalars(query).all()
         text = normalize_term(q)
         filtered = [
-            job for job in candidates
+            job
+            for job in candidates
             if (not text or text in normalize_term(f"{job.company} {job.title}"))
             and (not role or match_title(job.title, role.nome, role.variacoes))
             and (not level or match_title(job.title, level["nome"], level["variacoes"]))
         ]
         total = len(filtered)
-        jobs = filtered[(page - 1) * page_size:page * page_size]
+        jobs = filtered[(page - 1) * page_size : page * page_size]
     else:
         total = session.scalar(select(func.count()).select_from(query.subquery()))
         jobs = session.scalars(query.offset((page - 1) * page_size).limit(page_size)).all()

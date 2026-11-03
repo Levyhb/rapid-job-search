@@ -61,4 +61,4 @@ git commit -m "feat: descreve a funcionalidade"
 git push -u origin feature/nome-da-funcionalidade
 ```
 
-Abra um PR para `develop`. Próximas releases seguem o [roteiro](plano-desenvolvimento.md) e o Gitflow. A versão `1.0.0` está documentada no [histórico de alterações](../CHANGELOG.md).
+Abra um PR para `develop`. Próximas releases seguem o [Gitflow](gitflow.md). A versão `1.0.0` está documentada no [histórico de alterações](../CHANGELOG.md).
