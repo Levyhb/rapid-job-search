@@ -16,7 +16,22 @@
 Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são
 publicados no repositório. Correções seguem commits separados por causa.
 
-Atualizado em 28/10/2026. Este é o roteiro de implementação do escopo atual. O plano original continua como referência de contexto; os pedidos mais recentes do usuário prevalecem sobre requisitos conflitantes.
+## Segurança — 30/10/2026
+
+- [x] Restringir saída HTTP do coletor a IPs públicos validados na conexão,
+  preservar TLS e validar cada redirecionamento, sem proxies implícitos.
+- [x] Interromper respostas grandes e lentas durante o download.
+- [x] Fixar Node 24.22.1 no CI e impedir uso de patch anterior nos scripts/npm.
+- [x] Alinhar Python 3.14.10 no ambiente local, Docker, scripts e CI.
+- [x] Configurar PRs semanais de dependências, actions fixadas por SHA e CI periódico.
+- [x] Restringir worker: usuário não root, filesystem/código somente leitura,
+  limites de recursos e contexto Docker sem credenciais/dados locais.
+- [x] Tratar redirect malformado como falha isolada do portal, com erro sanitizado.
+- [ ] Verificar ativação no GitHub após integração e rebuild do worker com Docker ativo.
+
+Política e limites: [seguranca.md](seguranca.md). Relatórios privados não são
+publicados no repositório. Correções seguem commits separados por causa.
+
 
 ## Objetivo da primeira versão
 
@@ -33,7 +48,7 @@ Cadastrar empresas (nome e URL), configurar cargos e iniciar manualmente uma bus
 - Resultados finais terão Nome da empresa | Título da vaga (link) | Remoto/Híbrido. Registrar a modalidade da fonte e sua classificação normalizada para exibição e filtros futuros; manter somente remoto no filtro atual.
 - Paginação tanto na coleta dos portais quanto na tabela da aplicação.
 - Contagem durante a busca = vagas compatíveis únicas já persistidas naquela execução. Falhas e duplicatas não entram no contador.
-- Falhas de uma fonte vão para logs no backend e `console.log` no navegador. Não exibir erros de coleta na tela e continuar nas outras empresas. O total corresponde ao que foi encontrado; não afirmar que todos os portais foram consultados com sucesso.
+- Falhas de uma fonte vão para logs no backend e `console.log` no navegador; continuar nas outras empresas. Ao concluir a pesquisa, mostrar aviso vermelho com quantidade de sites com falha e modal Saber mais com empresa, URL e motivo. Zero vagas com coleta concluída não é falha. O total de vagas continua independente dos diagnósticos.
 - Validação de formulário e JSON inválido terá mensagem junto ao campo/importação: a regra de erros silenciosos se refere à coleta dos portais.
 - Sem login, candidatura automática, IA, currículo, alertas, agendamento ou múltiplos usuários nesta versão. Favoritos, perfis avançados e comparação histórica ficam para evoluções posteriores.
 
@@ -199,7 +214,7 @@ Após validação, integrar release em `main` e `develop` e criar tag `v1.0.0`. 
 
 Inspeção das 18 fontes que falharam concluída em 26/10/2026, incluindo a URL atualizada da Meta/Insi. Foram identificados caminhos de adaptação para 17 e bloqueio na rota pública do Escavador. Descoberta de Greenhouse/Gupy em sites próprios, novos parsers e APIs paginadas ainda serão implementados; evidências e prioridades em `docs/inspecao-portais-2026-10-26.md`.
 
-Atualização de suporte: validação assíncrona ao cadastrar/editar URL e rótulos Compatível/Precisa de adaptação/Acesso bloqueado nas respostas e logs. Rede sem confirmação fica inconclusiva. Indicador de exclamação, contagem de erros e modal serão uma melhoria futura. Detalhes em `docs/validacao-suporte-portais.md`.
+Atualização de suporte: validação assíncrona ao cadastrar/editar URL e rótulos Compatível/Precisa de adaptação/Acesso bloqueado nas respostas e logs. Rede sem confirmação fica inconclusiva. Indicador de exclamação, contagem de sites com falha e modal foram entregues posteriormente na branch `feature/aviso-falhas-busca`, conforme atualização abaixo. Detalhes em `docs/validacao-suporte-portais.md`.
 
 ## Preparação para publicação no GitHub — 27/10/2026
 
@@ -217,8 +232,18 @@ A CI anterior em `develop` foi aprovada no GitHub. Esta release executa novament
 
 Verificações locais da release: 52 testes aprovados, Ruff, ESLint, geração de tipos do Next.js, TypeScript, build de produção e configuração do Compose aprovados. Manifestos, package-lock e versão do OpenAPI conferidos como `1.0.0`.
 
-## Revisão manual de dependências — 03/11/2026
+## Aviso e detalhes de falhas na busca — 28/10/2026
 
-Branch `feature/revisao-manual-dependencias`: removido agendamento do Dependabot e documentada a revisão dos 12 PRs do bot, CI e auditorias npm/OSV em [revisao-dependencias-2026-11-03.md](revisao-dependencias-2026-11-03.md). Sem atualização de pacotes ou merge de PRs. Publicação, desativação de PRs de segurança e fechamento dos adiáveis dependem de autenticação GitHub.
+Branch `feature/aviso-falhas-busca`. Após concluir a busca, manter o resumo de vagas e exibir ao lado um informativo vermelho com exclamação, quantidade de sites com falha e botão Saber mais. Os dois blocos ocupam metades iguais no desktop; sem falhas o resumo usa toda a linha; no mobile ficam empilhados.
 
-Conclusão após autenticação: agendamento removido de `main` no commit `22d1e16` e sincronizado com `develop`; 12 PRs do Dependabot fechados sem merge, preservado PR #1 do usuário. GitHub confirmou PRs automáticos de segurança desativados. Estado dos alertas não foi modificado; acesso autenticado à lista de alertas retornou HTTP 403. Atualização manual conjunta permanece futura.
+O modal reutiliza os diagnósticos persistidos da execução, com empresa, link seguro HTTP(S) e motivo por item. Tamanho desktop 760 × 580px limitado ao viewport, cabeçalho fixo com fechar e conteúdo com rolagem interna; mobile em tela cheia. Sem rodapé de confirmação/cancelamento; suporta Escape e retorno de foco. Coletas parciais entram no aviso, sem descartar vagas já encontradas. Fontes concluídas com zero anúncios/zero correspondências não contam como falha. Nenhuma mudança de contrato ou migração no backend.
+
+Verificado: 52 testes backend, Ruff, ESLint, TypeScript e build aprovados. Navegador Chromium com respostas controladas confirmou cards 50/50, lista de 16 empresas, rolagem interna sem mover o header, único botão de fechar, Escape/retorno de foco, mobile 390px sem overflow, singular/plural, falhas com zero vagas, ausência de aviso sem falhas ou durante a busca e ausência de erros JavaScript.
+
+Ajuste visual solicitado: informativo de falhas com fundo amarelo suave e texto/ícone em âmbar, sem borda externa, mantendo espaçamento, tipografia e cantos do resumo final. Botão Saber mais acompanha a paleta amarela; ícone de exclamação preservado.
+
+## Modal de remoção de empresa — 29/10/2026
+
+Branch `feature/modal-remover-empresa`. Modal padrão de confirmação com título Remover empresa, X no cabeçalho, tamanho desktop 560 × 340px limitado ao viewport, corpo rolável e ações fixas no rodapé. No mobile permanece em tela cheia. A descrição explica que a empresa e suas vagas saem das próximas buscas; resultados históricos permanecem. Cancelar recebe foco inicial; confirmar mantém loading, tratamento de erro e toast existentes. Nenhuma alteração no comportamento do backend ou nos dados históricos.
+
+Verificações: ESLint, geração de tipos, TypeScript e build aprovados. Chromium com API simulada confirmou dimensões 560 × 340px, descrição visível, foco em Cancelar, cancelamento sem requisição DELETE, erro mantendo o modal aberto, confirmação removendo a linha e mostrando toast, mobile fullscreen sem overflow e fechamento por Escape. Nenhuma empresa real foi removida.

@@ -1,17 +1,10 @@
 # Histórico de alterações
 
-## Não lançado — segurança, 30/10/2026
+## Não lançado
 
-- Saída HTTP restrita a IPs públicos validados na conexão, com TLS preservado
-  e controle de redirects, incluindo URLs malformadas.
-- Leitura em streaming com limites de bytes, expansão gzip e tempo total.
-- Node 24.22.1 e Python 3.14.10 alinhados entre ambiente do projeto, scripts e CI.
-- Dependabot, actions por SHA, checks estáticos e verificação semanal preparados.
-- Worker com privilégios/recursos reduzidos e contexto Docker limitado.
-- 89 testes do backend, lint/tipos/build do frontend e Compose validados;
-  rebuild/execução Docker e ativação dos controles no GitHub ainda pendentes.
+- Modal de remoção de empresa com tamanho fixo, cabeçalho, descrição do impacto nas próximas buscas e confirmação no rodapé.
 
-Essas mudanças estão na branch hotfix; não representam publicação de release.
+- Aviso de sites com falha ao concluir a busca, ao lado do total de vagas, com modal de empresas, URLs e motivos; layout responsivo e rolagem interna.
 
 ## 1.0.0 — 28/10/2026
 
