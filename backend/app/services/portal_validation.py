@@ -7,7 +7,7 @@ from redis import Redis
 from rq import Queue
 from sqlalchemy import delete, update
 
-from app.collectors.portals import collect_company
+from app.collectors.browser import collect_portal
 from app.collectors.support import log_support, support_diagnostic
 from app.core.config import get_settings
 from app.core.database import SessionLocal
@@ -30,7 +30,7 @@ class PortalValidationService:
         self,
         session_factory=SessionLocal,
         queue_factory=validation_queue,
-        collector=collect_company,
+        collector=collect_portal,
     ):
         self.session_factory = session_factory
         self.queue_factory = queue_factory
@@ -52,7 +52,7 @@ class PortalValidationService:
                 company,
                 token,
                 job_id=f"portal-{token}",
-                job_timeout=210,
+                job_timeout=360,
                 result_ttl=60,
             )
             return {
