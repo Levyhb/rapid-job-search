@@ -34,7 +34,7 @@ Primeira versão do RapidJobSearch publicada em `main`.
 - A pesquisa inclui somente vagas com modalidade remota confirmada. Híbridas e presenciais ainda não entram no resultado.
 - Sites próprios e plataformas não suportadas precisam de adaptadores; bloqueios ou mudanças nos portais podem limitar a coleta.
 - API, PostgreSQL, Redis e worker precisam estar disponíveis para executar as buscas.
-- A validação manual completa dos cenários da etapa 9 permanece no roteiro; esta release consolida as funcionalidades existentes.
+- A validação manual completa dos cenários de uso permanece pendente; esta release consolida as funcionalidades existentes.
 
 ### Continuidade
 

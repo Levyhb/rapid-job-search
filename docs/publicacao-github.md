@@ -4,7 +4,7 @@ O projeto tem Git local e branches `main` e `develop`. A preparação inclui CI,
 
 ## O que será compartilhado
 
-Código, migrações, testes, locks de dependências, scripts, arquivos `.env.example` e documentação. Os JSONs em `docs/` são exemplos compartilháveis. O catálogo real em `backend/data/`, bancos, logs, ambiente virtual, dependências e arquivos `.env` ficam fora do Git.
+Código, migrações, testes, locks de dependências, scripts, arquivos `.env.example` e documentação. Os JSONs em `docs/` são exemplos compartilháveis. Planos e roteiros em `plans/`, catálogo real em `backend/data/`, bancos, logs, ambiente virtual, dependências e arquivos `.env` ficam fora do Git.
 
 O GitHub recebe também o histórico dos commits publicados. Ignorar um arquivo não remove uma cópia que já tenha sido commitada. Antes de publicar, revise o histórico e os arquivos preparados com:
 
@@ -61,4 +61,4 @@ git commit -m "feat: descreve a funcionalidade"
 git push -u origin feature/nome-da-funcionalidade
 ```
 
-Abra um PR para `develop`. Próximas releases seguem o [roteiro](plano-desenvolvimento.md) e o Gitflow. A versão `1.0.0` está documentada no [histórico de alterações](../CHANGELOG.md).
+Abra um PR para `develop`. Próximas releases seguem o [Gitflow](gitflow.md). A versão `1.0.0` está documentada no [histórico de alterações](../CHANGELOG.md).

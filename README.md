@@ -10,7 +10,7 @@ Primeira versão publicada em `main`, identificada pela tag `v1.0.0`. Consulte o
 
 Ambiente de desenvolvimento e layout base do RapidJobSearch implementados, com CSS global e painel responsivo. O diagnóstico recolhível verifica a conexão real com a API, PostgreSQL e Redis. Cadastro de empresas com persistência JSON no servidor, filtro, edição/remoção, importação revisada e exportação em modal com cópia formatada já funcionam. Cadastro de cargos, seleção, variações e prévia de títulos também funcionam, com persistência no PostgreSQL. A coleta de portais Gupy, InHire e Greenhouse está integrada ao botão de busca, com processamento em segundo plano, contagem e resultados remotos persistidos. Os resultados têm filtros avançados por texto, empresa, cargo e nível. Sites próprios e outras plataformas podem precisar de adaptação; não há suporte universal a qualquer URL.
 
-O painel tem duas abas: Busca por vagas e Empresas e cargos. O roteiro de trabalho está em [docs/plano-desenvolvimento.md](docs/plano-desenvolvimento.md). Etapas 0–7 concluídas; versão 1.0.0 consolidada; próximas entregas: ampliar a cobertura dos portais e as validações integradas. O contrato e os estados da pesquisa preparados no frontend estão descritos em [docs/abas-e-pesquisa.md](docs/abas-e-pesquisa.md); o endpoint de resumo já informa o total real de empresas. Veja também [docs/cadastro-empresas.md](docs/cadastro-empresas.md).
+O painel tem duas abas: **Busca por vagas** e **Empresas e cargos**. Consulte a [documentação da aplicação](docs/README.md) para os guias de cadastro, cargos, pesquisa, portais e manutenção.
 
 ## Publicação no GitHub
 
@@ -133,9 +133,9 @@ O worker executa as tarefas reais de busca e deve permanecer ativo enquanto houv
 - `backend/app/collectors`, `filters`, `services`, `workers`: coleta, correspondência de cargos, persistência e processamento em segundo plano.
 - `backend/migrations`: migrações.
 - `scripts`: setup, execução e verificações.
+- `docs/`: documentação da aplicação, operação e manutenção.
 - `docs/gitflow.md`: convenções de branches.
-- `docs/escopo-atual.md`: ajustes de requisitos aprovados na conversa.
-- `docs/plano-desenvolvimento.md`: roteiro por etapas, dependências e critérios de aceite.
+- `plans/`: planos e roteiros locais, ignorados pelo Git.
 
 Branches `main` e `develop` preparadas; as funcionalidades concluídas estão integradas em `develop`. `main` contém a versão 1.0.0. `develop` é sincronizada com a release e recebe as próximas implementações. O remoto `origin` está configurado para [Levyhb/rapid-job-search](https://github.com/Levyhb/rapid-job-search), com `main` e `develop` publicadas. Consulte [docs/gitflow.md](docs/gitflow.md) e [docs/publicacao-github.md](docs/publicacao-github.md).
 

@@ -13,6 +13,7 @@ __pycache__/
 coverage/
 htmlcov/
 work/
+/plans/
 backend/data/
 *.log
 
