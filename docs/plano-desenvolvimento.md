@@ -220,3 +220,5 @@ Verificações locais da release: 52 testes aprovados, Ruff, ESLint, geração d
 ## Revisão manual de dependências — 03/11/2026
 
 Branch `feature/revisao-manual-dependencias`: removido agendamento do Dependabot e documentada a revisão dos 12 PRs do bot, CI e auditorias npm/OSV em [revisao-dependencias-2026-11-03.md](revisao-dependencias-2026-11-03.md). Sem atualização de pacotes ou merge de PRs. Publicação, desativação de PRs de segurança e fechamento dos adiáveis dependem de autenticação GitHub.
+
+Conclusão após autenticação: agendamento removido de `main` no commit `22d1e16` e sincronizado com `develop`; 12 PRs do Dependabot fechados sem merge, preservado PR #1 do usuário. GitHub confirmou PRs automáticos de segurança desativados. Estado dos alertas não foi modificado; acesso autenticado à lista de alertas retornou HTTP 403. Atualização manual conjunta permanece futura.

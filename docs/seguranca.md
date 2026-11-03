@@ -4,10 +4,10 @@
 
 Atualizações de dependências passam por análise e aprovação manual do usuário.
 O agendamento `.github/dependabot.yml` foi removido em 03/11/2026. A alteração
-precisa chegar à branch padrão para interromper os PRs de versão no GitHub.
+foi publicada na branch padrão `main` para interromper os PRs de versão no GitHub.
 PRs automáticos de segurança têm opção remota separada (Dependabot security
 updates); desativá-la não exige desativar alertas, dependency graph ou os checks.
-Essa opção e a publicação estão pendentes de autenticação nesta máquina.
+O GitHub confirmou PRs automáticos de segurança desativados. Os 12 PRs do bot foram fechados sem merge. O estado dos alertas não foi alterado; a consulta autenticada aos alertas retornou HTTP 403.
 
 Manter os checks de segurança e revisão da CI. Preparar um único PR manual
 com versões selecionadas e compatíveis; não juntar majors apenas por serem

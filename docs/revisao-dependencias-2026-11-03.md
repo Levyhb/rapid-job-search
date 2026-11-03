@@ -33,7 +33,9 @@ Recomendação: não integrar os PRs individualmente. Consolidar atualizações 
 
 Removido `.github/dependabot.yml` na branch `feature/revisao-manual-dependencias`. A exclusão só desativa o agendamento remoto depois de integrada à branch padrão do GitHub. Na interface Settings → Advanced Security (ou Code security), desativar Dependabot security updates separadamente, mantendo os alertas de segurança e o dependency graph habilitados. Retirar o agendamento de versões não desativa os PRs automáticos de segurança.
 
-Até esta entrega local, não houve autenticação disponível no Git nem no navegador do Codex. A publicação da configuração, a alteração da opção remota e o fechamento dos PRs continuam pendentes. Nenhum PR foi fechado ou integrado. Após autenticar, conferir alertas e fechar os PRs adiáveis sem merge, conforme a preferência do usuário; eventuais correções urgentes devem ser preservadas ou substituídas prontamente por um PR manual revisado.
+Após autenticação do Git, removido o agendamento diretamente na branch padrão `main` (commit `22d1e16`) e sincronizada a alteração com `develop`. Os 12 PRs revisados (#2–#11, #13 e #14) foram fechados sem merge; o PR #1 do usuário permanece aberto. Nenhuma dependência foi atualizada.
+
+O GitHub confirmou `automated-security-fixes.enabled: false`. A tentativa de desativar retornou HTTP 422 informando que vulnerability alerts precisariam estar habilitados para configurar essa opção; a consulta posterior confirmou PRs automáticos de segurança desativados. Não alteramos o estado dos alertas de vulnerabilidade nem dismissamos alertas. A leitura dos alertas autenticada retornou HTTP 403, portanto a revisão não certifica ausência de alertas privados. Corrigir as ocorrências conhecidas de npm no futuro PR manual permanece pendente.
 
 ## Fontes
 
