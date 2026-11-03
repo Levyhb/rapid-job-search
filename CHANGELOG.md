@@ -1,6 +1,11 @@
 # Histórico de alterações
 
-## Não lançado
+## 1.1.0 — 03/11/2026
+
+- Coleta genérica com Playwright como alternativa para páginas não atendidas pelos coletores de plataforma, incluindo conteúdo dinâmico, paginação e vagas abertas por clique.
+- Reutilização do navegador e coleta concorrente com limites de tempo, páginas e requisições, preservando a validação de URLs públicas e os bloqueios de acesso.
+- Diagnósticos de coleta distinguem falhas de avisos de cobertura parcial; empresas recuperadas pelo Playwright não entram no contador de sites com falha.
+- Guia de primeira execução atualizado e documentação da coleta; planos e inspeções locais ficam fora do versionamento.
 
 - Modal de remoção de empresa com tamanho fixo, cabeçalho, descrição do impacto nas próximas buscas e confirmação no rodapé.
 
